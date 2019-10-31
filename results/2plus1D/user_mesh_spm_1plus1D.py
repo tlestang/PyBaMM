@@ -5,7 +5,7 @@ import sys
 # set logging level
 pybamm.set_logging_level("INFO")
 
-# load (1+1D) SPMe model
+# load (1+1D) SPM model
 options = {
     "current collector": "potential pair",
     "dimensionality": 1,
@@ -19,7 +19,7 @@ geometry = model.default_geometry
 # load parameter values and process model and geometry
 param = model.default_parameter_values
 C_rate = 1
-current_1C = 24 * param.process_symbol(pybamm.geometric_parameters.A_cc).evaluate()
+current_1C = 24 * param.evaluate(pybamm.geometric_parameters.A_cc)
 param.update(
     {
         "Typical current [A]": C_rate * current_1C,
@@ -27,15 +27,19 @@ param.update(
         "Negative current collector conductivity [S.m-1]": 1e5,
         "Positive current collector conductivity [S.m-1]": 1e5,
         "Heat transfer coefficient [W.m-2.K-1]": 1,
+        "Negative tab centre z-coordinate [m]": 0,  # negative tab at bottom
+        "Positive tab centre z-coordinate [m]": 0.137,  # positive tab at top
     }
 )
 param.process_model(model)
 param.process_geometry(geometry)
 
 # set mesh using user-supplied edges in z
-z_edges = np.array([0, 0.03, 0.1, 0.3, 0.47, 0.5, 0.73, 0.8, 0.911, 1])
+z_edges = np.array([0, 0.025, 0.05, 0.1, 0.3, 0.5, 0.7, 0.9, 0.95, 0.975, 1])
 submesh_types = model.default_submesh_types
-submesh_types["current collector"] = pybamm.GetUserSupplied1DSubMesh(z_edges)
+submesh_types["current collector"] = pybamm.MeshGenerator(
+    pybamm.UserSupplied1DSubMesh, submesh_params={"edges": z_edges}
+)
 # Need to make sure var_pts for z is one less than number of edges (variables are
 # evaluated at cell centres)
 npts_z = len(z_edges) - 1

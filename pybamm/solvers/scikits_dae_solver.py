@@ -25,11 +25,11 @@ class ScikitsDaeSolver(pybamm.DaeSolver):
     rtol : float, optional
         The relative tolerance for the solver (default is 1e-6).
     atol : float, optional
-        The relative tolerance for the solver (default is 1e-6).
+        The absolute tolerance for the solver (default is 1e-6).
     root_method : str, optional
         The method to use to find initial conditions (default is "lm")
     root_tol : float, optional
-        The tolerance for the initial-condition solver (default is 1e-8).
+        The tolerance for the initial-condition solver (default is 1e-6).
     max_steps: int, optional
         The maximum number of steps the solver will take before terminating
         (default is 1000).

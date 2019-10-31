@@ -17,7 +17,7 @@ class ScipySolver(pybamm.OdeSolver):
     rtol : float, optional
         The relative tolerance for the solver (default is 1e-6).
     atol : float, optional
-        The relative tolerance for the solver (default is 1e-6).
+        The absolute tolerance for the solver (default is 1e-6).
     """
 
     def __init__(self, method="BDF", rtol=1e-6, atol=1e-6):
@@ -83,7 +83,7 @@ class ScipySolver(pybamm.OdeSolver):
                 termination = "event"
                 t_event = []
                 for time in sol.t_events:
-                    if time:
+                    if time.size > 0:
                         t_event = np.append(t_event, np.max(time))
                 t_event = np.array([np.max(t_event)])
                 y_event = sol.sol(t_event)

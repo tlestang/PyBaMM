@@ -9,23 +9,37 @@ import sys
 import os
 
 #
-# Version info: Remember to keep this in sync with setup.py!
+# Version info
 #
-VERSION_INT = 0, 0, 0
-VERSION = ".".join([str(x) for x in VERSION_INT])
+def _load_version_int():
+    try:
+        root = os.path.abspath(os.path.dirname(__file__))
+        with open(os.path.join(root, "version"), "r") as f:
+            version = f.read().strip().split(",")
+        major, minor, revision = [int(x) for x in version]
+        return major, minor, revision
+    except Exception as e:
+        raise RuntimeError("Unable to read version number (" + str(e) + ").")
+
+
+__version_int__ = _load_version_int()
+__version__ = ".".join([str(x) for x in __version_int__])
 if sys.version_info[0] < 3:
     del x  # Before Python3, list comprehension iterators leaked
 
 #
-# Expose pybamm version
+# Expose PyBaMM version
 #
-
-
 def version(formatted=False):
+    """
+    Returns the version number, as a 3-part integer (major, minor, revision).
+    If ``formatted=True``, it returns a string formatted version (for example
+    "PyBaMM 1.0.0").
+    """
     if formatted:
-        return "PyBaMM " + VERSION
+        return "PyBaMM " + __version__
     else:
-        return VERSION_INT
+        return __version_int__
 
 
 #
@@ -112,6 +126,7 @@ from .expression_tree.unary_operators import (
     r_average,
 )
 from .expression_tree.functions import *
+from .expression_tree.interpolant import Interpolant
 from .expression_tree.parameter import Parameter, FunctionParameter
 from .expression_tree.broadcasts import Broadcast, PrimaryBroadcast, FullBroadcast
 from .expression_tree.scalar import Scalar
@@ -135,18 +150,22 @@ from .expression_tree.exceptions import (
     UndefinedOperationError,
     GeometryError,
 )
-from .expression_tree.simplify import (
+
+# Operations
+from .expression_tree.operations.simplify import (
     Simplification,
     simplify_if_constant,
     simplify_addition_subtraction,
     simplify_multiplication_division,
 )
-from .expression_tree.evaluate import (
+from .expression_tree.operations.evaluate import (
     find_symbols,
     id_to_python_variable,
     to_python,
     EvaluatorPython,
 )
+from .expression_tree.operations.jacobian import Jacobian
+from .expression_tree.operations.convert_to_casadi import CasadiConverter
 
 #
 # Model classes
@@ -186,6 +205,7 @@ from .parameters import electrical_parameters
 from .parameters import thermal_parameters
 from .parameters import standard_parameters_lithium_ion, standard_parameters_lead_acid
 from .parameters.print_parameters import print_parameters, print_evaluated_parameters
+from .parameters import parameter_sets
 
 #
 # Geometry
@@ -209,14 +229,22 @@ from .geometry import standard_spatial_vars
 # Mesh and Discretisation classes
 #
 from .discretisations.discretisation import Discretisation
-from .meshes.meshes import Mesh
+from .meshes.meshes import Mesh, SubMesh, MeshGenerator
 from .meshes.zero_dimensional_submesh import SubMesh0D
 from .meshes.one_dimensional_submeshes import (
     SubMesh1D,
     Uniform1DSubMesh,
-    GetUserSupplied1DSubMesh,
+    Exponential1DSubMesh,
+    Chebyshev1DSubMesh,
+    UserSupplied1DSubMesh,
 )
-from .meshes.scikit_fem_submeshes import ScikitSubMesh2D, ScikitUniform2DSubMesh
+from .meshes.scikit_fem_submeshes import (
+    ScikitSubMesh2D,
+    ScikitUniform2DSubMesh,
+    ScikitExponential2DSubMesh,
+    ScikitChebyshev2DSubMesh,
+    UserSupplied2DSubMesh,
+)
 
 #
 # Spatial Methods
@@ -233,12 +261,12 @@ from .solvers.solution import Solution
 from .solvers.base_solver import BaseSolver
 from .solvers.ode_solver import OdeSolver
 from .solvers.dae_solver import DaeSolver
-from .solvers.scipy_solver import ScipySolver
-from .solvers.scikits_dae_solver import ScikitsDaeSolver
-from .solvers.scikits_ode_solver import ScikitsOdeSolver
-from .solvers.scikits_ode_solver import have_scikits_odes
 from .solvers.algebraic_solver import AlgebraicSolver
-from .solvers.klu_sparse_solver import KLU
+from .solvers.casadi_solver import CasadiSolver
+from .solvers.scikits_dae_solver import ScikitsDaeSolver
+from .solvers.scikits_ode_solver import ScikitsOdeSolver, have_scikits_odes
+from .solvers.scipy_solver import ScipySolver
+from .solvers.idaklu_solver import IDAKLUSolver, have_idaklu
 
 
 #

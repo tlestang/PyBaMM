@@ -11,6 +11,11 @@ class TestSPM(unittest.TestCase):
         model = pybamm.lithium_ion.SPM(options)
         model.check_well_posedness()
 
+        # Test build after init
+        model = pybamm.lithium_ion.SPM(build=False)
+        model.build_model()
+        model.check_well_posedness()
+
     def test_default_geometry(self):
         options = {"thermal": "isothermal"}
         model = pybamm.lithium_ion.SPM(options)
@@ -48,7 +53,15 @@ class TestSPM(unittest.TestCase):
         model = pybamm.lithium_ion.SPM(options)
         model.check_well_posedness()
 
+        options = {"current collector": "set external potential", "dimensionality": 0}
+        with self.assertRaises(NotImplementedError):
+            pybamm.lithium_ion.SPM(options)
+
         options = {"current collector": "set external potential", "dimensionality": 1}
+        model = pybamm.lithium_ion.SPM(options)
+        model.check_well_posedness()
+
+        options = {"current collector": "set external potential", "dimensionality": 2}
         model = pybamm.lithium_ion.SPM(options)
         model.check_well_posedness()
 
