@@ -57,7 +57,8 @@ def non_dim_temperature(temperature):
 
 
 # step model in time and process variables for later plotting
-solver = model.default_solver
+# solver = model.default_solver
+solver = pybamm.IDAKLUSolver()
 dt = 0.1  # timestep to take
 npts = 20  # number of points to store the solution at during this step
 solution1 = solver.step(model, dt, npts=npts)

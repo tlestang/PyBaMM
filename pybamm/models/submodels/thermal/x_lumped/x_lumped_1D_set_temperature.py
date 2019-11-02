@@ -25,10 +25,12 @@ class SetTemperature1D(BaseModel):
 
     def set_rhs(self, variables):
         T_av = variables["X-averaged cell temperature"]
+        Q_av = variables["X-averaged total heating"]
 
         # Dummy equation so that PyBaMM doesn't change the temperature during solve
         # i.e. d_T/d_t = 0. The (local) temperature is set externally between steps.
-        self.rhs = {T_av: pybamm.Scalar(0)}
+        # Note: hacky fix as setting rhs exactly to zero causes KLU to fail
+        self.rhs = {T_av: pybamm.Scalar(1e-30) * Q_av}
 
     def _current_collector_heating(self, variables):
         """Returns the heat source terms in the 1D current collector"""
