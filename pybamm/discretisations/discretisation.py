@@ -387,12 +387,15 @@ class Discretisation(object):
             for tab in ["negative tab", "positive tab"]:
                 if any(tab in side for side in list(bcs.keys())):
                     bcs[mesh.tabs[tab]] = bcs.pop(tab)
-            # replace no tab
-            if any("no tab" in side for side in list(bcs.keys())):
-                if "left" in list(bcs.keys()):
-                    bcs["right"] = bcs.pop("no tab")  # tab at bottom
-                else:
-                    bcs["left"] = bcs.pop("no tab")  # tab at top
+            # if both left and right are set we are done
+            if all(side in list(bcs.keys()) for side in ["left", "right"]):
+                pass
+            # if only left is set, then set right to no tab
+            elif "left" in list(bcs.keys()):
+                bcs["right"] = bcs.pop("no tab")  # tab at bottom
+            # otherwise left is no tab
+            else:
+                bcs["left"] = bcs.pop("no tab")  # tab at top
 
         return bcs
 
