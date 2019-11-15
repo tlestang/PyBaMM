@@ -3,8 +3,12 @@
 ## Features
 
 -   Generalized importing of external variables ([#728](https://github.com/pybamm-team/PyBaMM/pull/728))
--   New extrapolation methods ([#707](https://github.com/pybamm-team/PyBaMM/pull/707))
+-   Separated active and inactive material volume fractions ([#726](https://github.com/pybamm-team/PyBaMM/pull/726))
+-   Added submodels for tortuosity ([#726](https://github.com/pybamm-team/PyBaMM/pull/726))
+-   Simplified the interface for setting current functions ([#723](https://github.com/pybamm-team/PyBaMM/pull/723))
+-   Added Heaviside operator ([#723](https://github.com/pybamm-team/PyBaMM/pull/723))
 -   Allow abs tolerance to be set by variable for IDA KLU solver ([#700](https://github.com/pybamm-team/PyBaMM/pull/700))
+-   New extrapolation methods ([#707](https://github.com/pybamm-team/PyBaMM/pull/707))
 -   Added Simulation class ([#693](https://github.com/pybamm-team/PyBaMM/pull/693))
 -   Added interface to CasADi solver ([#687](https://github.com/pybamm-team/PyBaMM/pull/687), [#691](https://github.com/pybamm-team/PyBaMM/pull/691), [#714](https://github.com/pybamm-team/PyBaMM/pull/714)). This makes the SUNDIALS DAE solvers (Scikits and KLU) truly optional (though IDA KLU is recommended for solving the DFN).
 -   Added option to use CasADi's Algorithmic Differentiation framework to calculate Jacobians ([#687](https://github.com/pybamm-team/PyBaMM/pull/687))
@@ -25,6 +29,7 @@
 
 ## Bug fixes
 
+-   Improved flexibility of parameter values so that parameters (such as diffusivity or current) can be set as functions or scalars ([#723](https://github.com/pybamm-team/PyBaMM/pull/723))
 -   Fixed a bug where boundary conditions were sometimes handled incorrectly in 1+1D models ([#713](https://github.com/pybamm-team/PyBaMM/pull/713))
 -   Corrected a sign error in Dirichlet boundary conditions in the Finite Element Method ([#706](https://github.com/pybamm-team/PyBaMM/pull/706))
 -   Passed the correct dimensional temperature to open circuit potential ([#702](https://github.com/pybamm-team/PyBaMM/pull/702))
