@@ -17,6 +17,8 @@ models = {"Current collector": cc_model, "Average SPMe": spme_av, "2+1D SPMe": s
 
 # set parameters based on the spme
 param = spme.default_parameter_values
+C_rate = 1
+param.update({"C-rate": C_rate})
 
 # set mesh
 var = pybamm.standard_spatial_vars

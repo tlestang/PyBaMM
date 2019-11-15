@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import sys
 
 # set logging level
-pybamm.set_logging_level("DEBUG")
+pybamm.set_logging_level("INFO")
 
 # load (2+1D) SPM model
 options = {
@@ -13,13 +13,14 @@ options = {
     "thermal": "x-lumped",
 }
 model = pybamm.lithium_ion.SPM(options)
-model.use_simplify = False  # simplifying jacobian slow for large systems
 
 # create geometry
 geometry = model.default_geometry
 
 # load parameter values and process model and geometry
 param = model.default_parameter_values
+C_rate = 1
+param.update({"C-rate": C_rate})
 param.process_model(model)
 param.process_geometry(geometry)
 
@@ -43,8 +44,8 @@ disc = pybamm.Discretisation(mesh, model.default_spatial_methods)
 disc.process_model(model)
 
 # solve model -- simulate one hour discharge
-tau = param.process_symbol(pybamm.standard_parameters_lithium_ion.tau_discharge)
-t_end = 3600 / tau.evaluate(0)
+tau = param.evaluate(pybamm.standard_parameters_lithium_ion.tau_discharge)
+t_end = 3600 / tau
 t_eval = np.linspace(0, t_end, 120)
 solution = pybamm.IDAKLUSolver().solve(model, t_eval)
 
@@ -134,4 +135,4 @@ def plot(t):
     plt.show()
 
 
-plot(solution.t[-1] / 2)
+plot(1800 / tau.evaluate())

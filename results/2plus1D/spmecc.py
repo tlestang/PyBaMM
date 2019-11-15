@@ -12,6 +12,8 @@ models = [cell_model, cc_model]
 
 # set parameters based on the cell model
 param = cell_model.default_parameter_values
+C_rate = 1
+param.update({"C-rate": C_rate})
 
 # make current collectors not so conductive, just for illustrative purposes
 param.update(

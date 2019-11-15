@@ -20,6 +20,9 @@ geometry = model.default_geometry
 
 # load parameter values and process model and geometry
 param = model.default_parameter_values
+C_rate = 1
+param.update({"C-rate": C_rate})
+
 param.process_model(model)
 param.process_geometry(geometry)
 
@@ -46,6 +49,7 @@ disc.process_model(model)
 tau = param.process_symbol(pybamm.standard_parameters_lithium_ion.tau_discharge)
 t_end = 3600 / tau.evaluate(0)
 t_eval = np.linspace(0, t_end, 120)
+model.convert_to_format = "casadi"  # use casadi for jacobian
 solution = pybamm.IDAKLUSolver().solve(model, t_eval)
 
 # TO DO: 2+1D automated plotting
