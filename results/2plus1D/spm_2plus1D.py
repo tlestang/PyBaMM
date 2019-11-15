@@ -21,6 +21,7 @@ geometry = model.default_geometry
 param = model.default_parameter_values
 C_rate = 1
 param.update({"C-rate": C_rate})
+
 param.process_model(model)
 param.process_geometry(geometry)
 

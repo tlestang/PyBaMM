@@ -17,8 +17,8 @@ Positive tab centre y-coordinate [m],0.147,,Need to find actual value for KOKAM 
 Positive tab centre z-coordinate [m],0.137,,Need to find actual value for KOKAM cell
 ,,,
 # Current collector properties ,,,
-Negative current collector conductivity [S.m-1],59600000,LIONSIMBA,carbon
-Positive current collector conductivity [S.m-1],35500000,LIONSIMBA,aluminium
+Negative current collector conductivity [S.m-1],5960000,LIONSIMBA,carbon
+Positive current collector conductivity [S.m-1],3550000,LIONSIMBA,aluminium
 ,,,
 # Density,,,
 Negative current collector density [kg.m-3],8954,,
