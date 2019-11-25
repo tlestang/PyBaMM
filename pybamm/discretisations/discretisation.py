@@ -67,7 +67,7 @@ class Discretisation(object):
         # reset discretised_symbols
         self._discretised_symbols = {}
 
-    def process_model(self, model, inplace=True):
+    def process_model(self, model, inplace=True, check_model=True):
         """Discretise a model.
         Currently inplace, could be changed to return a new model.
 
@@ -79,6 +79,12 @@ class Discretisation(object):
         inplace: bool, optional
             If True, discretise the model in place. Otherwise, return a new
             discretised model. Default is True.
+        check_model : bool, optional
+            If True, model checks are performed after discretisation. For large
+            systems these checks can be slow, so can be skipped by setting this
+            option to False. When developing, testing or debugging it is recommened
+            to leave this option as True as it may help to identify any errors.
+            Default is True.
 
         Returns
         -------
@@ -162,7 +168,9 @@ class Discretisation(object):
         model_disc.mass_matrix = self.create_mass_matrix(model_disc)
 
         # Check that resulting model makes sense
-        self.check_model(model_disc)
+        if check_model:
+            pybamm.logger.info("Performing model checks for {}".format(model.name))
+            self.check_model(model_disc)
 
         pybamm.logger.info("Finish discretising {}".format(model.name))
 
