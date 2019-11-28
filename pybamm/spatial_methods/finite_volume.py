@@ -13,8 +13,7 @@ from scipy.sparse import (
     lil_matrix,
     coo_matrix,
 )
-import autograd.numpy as np
-from autograd.builtins import isinstance
+import numpy as np
 
 
 class FiniteVolume(pybamm.SpatialMethod):
@@ -60,7 +59,10 @@ class FiniteVolume(pybamm.SpatialMethod):
         """
         # for finite volume we use the cell centres
         symbol_mesh = self.mesh.combine_submeshes(*symbol.domain)
-        return pybamm.Vector(symbol_mesh[0].nodes, domain=symbol.domain)
+        entries = np.concatenate([mesh.nodes for mesh in symbol_mesh])
+        return pybamm.Vector(
+            entries, domain=symbol.domain, auxiliary_domains=symbol.auxiliary_domains
+        )
 
     def gradient(self, symbol, discretised_symbol, boundary_conditions):
         """Matrix-vector multiplication to implement the gradient operator.
@@ -86,6 +88,32 @@ class FiniteVolume(pybamm.SpatialMethod):
 
         out = gradient_matrix @ discretised_symbol
         return out
+
+    def preprocess_external_variables(self, var):
+        """
+        For finite volumes, we need the boundary fluxes for discretising
+        properly. Here, we extrapolate and then add them to the boundary
+        conditions.
+
+        Parameters
+        ----------
+        var : :class:`pybamm.Variable` or :class:`pybamm.Concatenation`
+            The external variable that is to be processed
+
+        Returns
+        -------
+        new_bcs: dict
+            A dictionary containing the new boundary conditions
+        """
+
+        new_bcs = {
+            var: {
+                "left": (pybamm.BoundaryGradient(var, "left"), "Neumann"),
+                "right": (pybamm.BoundaryGradient(var, "right"), "Neumann"),
+            }
+        }
+
+        return new_bcs
 
     def gradient_matrix(self, domain):
         """
@@ -614,9 +642,7 @@ class FiniteVolume(pybamm.SpatialMethod):
         # https://github.com/Scottmar93/extrapolation-coefficents/tree/master
         if isinstance(symbol, pybamm.BoundaryValue):
 
-            if use_bcs and pybamm.has_bc_of_form(
-                child, symbol.side, bcs, "Dirichlet"
-            ):
+            if use_bcs and pybamm.has_bc_of_form(child, symbol.side, bcs, "Dirichlet"):
                 # just use the value from the bc: f(x*)
                 sub_matrix = csr_matrix((1, prim_pts))
                 additive = bcs[child.id][symbol.side][0]
@@ -630,7 +656,7 @@ class FiniteVolume(pybamm.SpatialMethod):
                     if use_bcs and pybamm.has_bc_of_form(
                         child, symbol.side, bcs, "Neumann"
                     ):
-                        sub_matrix = csr_matrix(([1], ([0], [0])), shape=(1, prim_pts),)
+                        sub_matrix = csr_matrix(([1], ([0], [0])), shape=(1, prim_pts))
 
                         additive = -dx0 * bcs[child.id][symbol.side][0]
 
@@ -651,7 +677,7 @@ class FiniteVolume(pybamm.SpatialMethod):
                         alpha = -(dx0 * (dx0 + dx1)) / (2 * dx0 + dx1)
 
                         sub_matrix = csr_matrix(
-                            ([a, b], ([0, 0], [0, 1])), shape=(1, prim_pts),
+                            ([a, b], ([0, 0], [0, 1])), shape=(1, prim_pts)
                         )
                         additive = alpha * bcs[child.id][symbol.side][0]
 
@@ -661,7 +687,7 @@ class FiniteVolume(pybamm.SpatialMethod):
                         c = dx0 * (dx0 + dx1) / (dx2 * (dx1 + dx2))
 
                         sub_matrix = csr_matrix(
-                            ([a, b, c], ([0, 0, 0], [0, 1, 2])), shape=(1, prim_pts),
+                            ([a, b, c], ([0, 0, 0], [0, 1, 2])), shape=(1, prim_pts)
                         )
 
                         additive = pybamm.Scalar(0)
@@ -678,7 +704,7 @@ class FiniteVolume(pybamm.SpatialMethod):
                         # use formula:
                         # f(x*) = fN + dxN * f'(x*)
                         sub_matrix = csr_matrix(
-                            ([1], ([0], [prim_pts - 1]),), shape=(1, prim_pts),
+                            ([1], ([0], [prim_pts - 1])), shape=(1, prim_pts)
                         )
                         additive = dxN * bcs[child.id][symbol.side][0]
 
@@ -702,7 +728,7 @@ class FiniteVolume(pybamm.SpatialMethod):
                         b = -(dxN ** 2) / (2 * dxN * dxNm1 + dxNm1 ** 2)
                         alpha = dxN * (dxN + dxNm1) / (2 * dxN + dxNm1)
                         sub_matrix = csr_matrix(
-                            ([b, a], ([0, 0], [prim_pts - 2, prim_pts - 1]),),
+                            ([b, a], ([0, 0], [prim_pts - 2, prim_pts - 1])),
                             shape=(1, prim_pts),
                         )
 
@@ -730,9 +756,7 @@ class FiniteVolume(pybamm.SpatialMethod):
 
         elif isinstance(symbol, pybamm.BoundaryGradient):
 
-            if use_bcs and pybamm.has_bc_of_form(
-                child, symbol.side, bcs, "Neumann"
-            ):
+            if use_bcs and pybamm.has_bc_of_form(child, symbol.side, bcs, "Neumann"):
                 # just use the value from the bc: f'(x*)
                 sub_matrix = csr_matrix((1, prim_pts))
                 additive = bcs[child.id][symbol.side][0]
