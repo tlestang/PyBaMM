@@ -758,12 +758,13 @@ class BaseBatteryModel(pybamm.BaseModel):
                 # "Equivalent resistance": -(V - ocv) / I_app,
                 # "Equivalent resistance [Ohm]": -(V_dim - ocv_dim) / I_app_dim,
                 "Local equivalent resistance": -(V_local - ocv) / i_cc,
-                "Local equivalent resistance [Ohm]": -(V_local_dim - ocv_dim)
+                "Local equivalent resistance [Ohm.m-2]": -(V_local_dim - ocv_dim)
                 / i_cc_dim,
             }
         )
-
         # Battery-wide variables
+        eta_e_av = self.variables.get("X-averaged electrolyte ohmic losses", 0)
+        eta_c_av = self.variables.get("X-averaged concentration overpotential", 0)
         eta_e_av_dim = self.variables.get("X-averaged electrolyte ohmic losses [V]", 0)
         eta_c_av_dim = self.variables.get(
             "X-averaged concentration overpotential [V]", 0
@@ -785,6 +786,23 @@ class BaseBatteryModel(pybamm.BaseModel):
                 "X-averaged battery concentration overpotential [V]": eta_c_av_dim
                 * num_cells,
                 "Battery voltage [V]": V_dim * num_cells,
+                "Local overpotential sum": eta_r_av
+                + eta_c_av
+                + eta_e_av
+                + delta_phi_s_av,
+                "Local ECM resistance": -(
+                    eta_r_av + eta_c_av + eta_e_av + delta_phi_s_av
+                )
+                / i_cc,
+                "Local ECM resistance [Ohm.m-2]": -(
+                    eta_r_av_dim + eta_c_av_dim + eta_e_av_dim + delta_phi_s_av_dim
+                )
+                / i_cc_dim,
+                "Local ECM voltage [V]": ocv_dim
+                + eta_r_av_dim
+                + eta_c_av_dim
+                + eta_e_av_dim
+                + delta_phi_s_av_dim,
             }
         )
 

@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 pybamm.set_logging_level("INFO")
 
 # load model
-model = pybamm.lithium_ion.DFN()
+model = pybamm.lithium_ion.SPMe()
 
 # create geometry
 geometry = model.default_geometry
@@ -38,15 +38,17 @@ solution = solver.solve(model, t_eval)
 output_vars = pybamm.post_process_variables(
     model.variables, solution.t, solution.y, mesh
 )
-R = output_vars["Equivalent resistance [Ohm]"](solution.t)
-V = output_vars["Terminal voltage [V]"](solution.t)
-I = output_vars["Current [A]"](solution.t)
-OCV = output_vars["Measured open circuit voltage [V]"](solution.t)
-
-plt.plot(solution.t, V, "-")
-plt.plot(solution.t, OCV - I * R, "o")
+v = output_vars["Terminal voltage"]
+ocv = output_vars["Measured open circuit voltage"]
+eta = output_vars["Local overpotential sum"]
+t = solution.t
+plt.plot(t, v(t), "-", t, ocv(t) + eta(t), "o")
 plt.show()
 
+R_1 = output_vars["Local equivalent resistance"]
+R_2 = output_vars["Local equivalent resistance by overpotential"]
+plt.plot(t, R_1(t), "-", t, R_2(t), "o")
+plt.show()
 
 # plot
 plot = pybamm.QuickPlot(model, mesh, solution)

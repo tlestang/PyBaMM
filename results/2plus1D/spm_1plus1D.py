@@ -24,8 +24,8 @@ param.update(
     {
         "Typical current [A]": C_rate * current_1C,
         "Initial temperature [K]": 298.15,
-        "Negative current collector conductivity [S.m-1]": 1e7,
-        "Positive current collector conductivity [S.m-1]": 1e7,
+        "Negative current collector conductivity [S.m-1]": 1e5,
+        "Positive current collector conductivity [S.m-1]": 1e5,
         "Heat transfer coefficient [W.m-2.K-1]": 1,
     }
 )
@@ -47,17 +47,22 @@ disc.process_model(model)
 tau = param.process_symbol(pybamm.standard_parameters_lithium_ion.tau_discharge)
 t_end = 3600 / tau.evaluate(0)
 t_eval = np.linspace(0, t_end, 120)
-solution = model.default_solver.solve(model, t_eval)
+solver = pybamm.CasadiSolver(mode="fast")
+solution = solver.solve(model, t_eval)
 
 # plot
 output_variables = [
-    "X-averaged negative particle surface concentration [mol.m-3]",
-    "X-averaged positive particle surface concentration [mol.m-3]",
+    # "X-averaged negative particle surface concentration [mol.m-3]",
+    # "X-averaged positive particle surface concentration [mol.m-3]",
     # "X-averaged cell temperature [K]",
-    "Local potenital difference [V]",
-    "Current collector current density [A.m-2]",
-    "Terminal voltage [V]",
-    "Volume-averaged cell temperature [K]",
+    "Local voltage",
+    # "Measured open circuit voltage",
+    # "Local overpotential sum",
+    # "Local equivalent resistance",
+    # "Local equivalent resistance by overpotential",
+    # "Current collector current density [A.m-2]",
+    # "Terminal voltage [V]",
+    # "Volume-averaged cell temperature [K]",
 ]
 plot = pybamm.QuickPlot(model, mesh, solution, output_variables)
 plot.dynamic_plot()
