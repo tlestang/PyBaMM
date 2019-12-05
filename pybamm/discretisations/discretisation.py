@@ -687,7 +687,9 @@ class Discretisation(object):
         except KeyError:
             discretised_symbol = self._process_symbol(symbol)
             self._discretised_symbols[symbol.id] = discretised_symbol
-            discretised_symbol.test_shape()
+            # Testing shape is slow, so only do it in debug mode
+            if pybamm.settings.debug_mode is True:
+                discretised_symbol.test_shape()
             return discretised_symbol
 
     def _process_symbol(self, symbol):

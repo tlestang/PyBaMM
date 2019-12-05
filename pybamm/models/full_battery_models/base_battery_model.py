@@ -156,7 +156,7 @@ class BaseBatteryModel(pybamm.BaseModel):
             "particle": "Fickian diffusion",
             "thermal": "isothermal",
             "thermal current collector": False,
-            "external submodels": []
+            "external submodels": [],
         }
         options = default_options
         # any extra options overwrite the default options
@@ -733,6 +733,9 @@ class BaseBatteryModel(pybamm.BaseModel):
 
         # TODO: add current collector losses to the voltage in 3D
 
+        I_app = self.param.current_with_time
+        I_app_dim = pybamm.standard_parameters_lithium_ion.dimensional_current_with_time
+
         self.variables.update(
             {
                 "X-averaged open circuit voltage": ocv_av,
@@ -747,6 +750,8 @@ class BaseBatteryModel(pybamm.BaseModel):
                 "Local voltage [V]": V_local_dim,
                 "Terminal voltage": V,
                 "Terminal voltage [V]": V_dim,
+                "Equivalent resistance": -(V - ocv) / I_app,
+                "Equivalent resistance [Ohm]": -(V_dim - ocv_dim) / I_app_dim,
             }
         )
 

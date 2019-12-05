@@ -4,6 +4,7 @@
 
 import pybamm
 import numpy as np
+import matplotlib.pyplot as plt
 
 pybamm.set_logging_level("INFO")
 
@@ -33,6 +34,19 @@ solver = model.default_solver
 solver.rtol = 1e-3
 solver.atol = 1e-6
 solution = solver.solve(model, t_eval)
+
+output_vars = pybamm.post_process_variables(
+    model.variables, solution.t, solution.y, mesh
+)
+R = output_vars["Equivalent resistance [Ohm]"](solution.t)
+V = output_vars["Terminal voltage [V]"](solution.t)
+I = output_vars["Current [A]"](solution.t)
+OCV = output_vars["Measured open circuit voltage [V]"](solution.t)
+
+plt.plot(solution.t, V, "-")
+plt.plot(solution.t, OCV - I * R, "o")
+plt.show()
+
 
 # plot
 plot = pybamm.QuickPlot(model, mesh, solution)
