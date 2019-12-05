@@ -684,6 +684,9 @@ class BaseBatteryModel(pybamm.BaseModel):
 
         ocv_av = ocp_p_av - ocp_n_av
         ocv_av_dim = ocp_p_av_dim - ocp_n_av_dim
+
+        # Note: this is a function of y and z, so is only the "measured ocv" in
+        # 1 macroscopic dimension.
         ocv = ocp_p_right - ocp_n_left
         ocv_dim = ocp_p_right_dim - ocp_n_left_dim
 
@@ -733,8 +736,10 @@ class BaseBatteryModel(pybamm.BaseModel):
 
         # TODO: add current collector losses to the voltage in 3D
 
-        I_app = self.param.current_with_time
-        I_app_dim = pybamm.standard_parameters_lithium_ion.dimensional_current_with_time
+        # I_app = self.param.current_with_time
+        # I_app_dim = pybamm.standard_parameters_lithium_ion.dimensional_current_with_time
+        i_cc = self.variables["Current collector current density"]
+        i_cc_dim = self.variables["Current collector current density [A.m-2]"]
 
         self.variables.update(
             {
@@ -750,8 +755,11 @@ class BaseBatteryModel(pybamm.BaseModel):
                 "Local voltage [V]": V_local_dim,
                 "Terminal voltage": V,
                 "Terminal voltage [V]": V_dim,
-                "Equivalent resistance": -(V - ocv) / I_app,
-                "Equivalent resistance [Ohm]": -(V_dim - ocv_dim) / I_app_dim,
+                # "Equivalent resistance": -(V - ocv) / I_app,
+                # "Equivalent resistance [Ohm]": -(V_dim - ocv_dim) / I_app_dim,
+                "Local equivalent resistance": -(V_local - ocv) / i_cc,
+                "Local equivalent resistance [Ohm]": -(V_local_dim - ocv_dim)
+                / i_cc_dim,
             }
         )
 
