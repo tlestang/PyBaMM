@@ -772,7 +772,7 @@ class BaseBatteryModel(pybamm.BaseModel):
         num_cells = pybamm.Parameter(
             "Number of cells connected in series to make a battery"
         )
-
+        v_ecm = -(eta_r_av_dim + eta_c_av_dim + eta_e_av_dim + delta_phi_s_av_dim)
         self.variables.update(
             {
                 "X-averaged battery open circuit voltage [V]": ocv_av_dim * num_cells,
@@ -794,15 +794,8 @@ class BaseBatteryModel(pybamm.BaseModel):
                     eta_r_av + eta_c_av + eta_e_av + delta_phi_s_av
                 )
                 / i_cc,
-                "Local ECM resistance [Ohm.m-2]": -(
-                    eta_r_av_dim + eta_c_av_dim + eta_e_av_dim + delta_phi_s_av_dim
-                )
-                / i_cc_dim,
-                "Local ECM voltage [V]": ocv_dim
-                + eta_r_av_dim
-                + eta_c_av_dim
-                + eta_e_av_dim
-                + delta_phi_s_av_dim,
+                "Local ECM resistance [Ohm.m2]": v_ecm / i_cc_dim,
+                "Local ECM voltage [V]": v_ecm,
             }
         )
 
