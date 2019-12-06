@@ -187,7 +187,8 @@ class Simulation:
 
         self._solution = solver.solve(self.built_model, t_eval)
 
-    def step(self, dt, solver=None, external_variables=None, save=True):
+    def step(self, dt, solver=None, external_variables=None, save=True,
+             check_model=False):
         """
         A method to step the model forward one timestep. This method will
         automatically build and set the model parameters if not already done so.
@@ -206,7 +207,7 @@ class Simulation:
         save : bool
             Turn on to store the solution of all previous timesteps
         """
-        self.build()
+        self.build(check_model=check_model)
 
         if solver is None:
             solver = self.solver
