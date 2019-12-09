@@ -190,7 +190,7 @@ class Simulation:
         self.t_eval = t_eval
         self._solution = solver.solve(self.built_model, t_eval, inputs=inputs)
 
-    def step(self, dt, solver=None, external_variables=None, save=True,
+    def step(self, dt, solver=None, external_variables=None, inputs=None, save=True,
              check_model=False):
         """
         A method to step the model forward one timestep. This method will
