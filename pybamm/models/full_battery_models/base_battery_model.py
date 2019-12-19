@@ -689,6 +689,14 @@ class BaseBatteryModel(pybamm.BaseModel):
         # 1 macroscopic dimension.
         ocv = ocp_p_right - ocp_n_left
         ocv_dim = ocp_p_right_dim - ocp_n_left_dim
+        ocv_init = self.param.U_p(
+            self.param.c_p_init, self.param.T_init
+        ) - self.param.U_n(self.param.c_n_init, self.param.T_init)
+        ocv_init_dim = (
+            self.param.U_p_ref
+            - self.param.U_n_ref
+            + self.param.potential_scale * ocv_init
+        )
 
         # overpotentials
         eta_r_n_av = self.variables[
@@ -745,8 +753,10 @@ class BaseBatteryModel(pybamm.BaseModel):
             {
                 "X-averaged open circuit voltage": ocv_av,
                 "Measured open circuit voltage": ocv,
+                "Change in measured open circuit voltage": ocv - ocv_init,
                 "X-averaged open circuit voltage [V]": ocv_av_dim,
                 "Measured open circuit voltage [V]": ocv_dim,
+                "Change in measured open circuit voltage [V]": ocv_dim - ocv_init_dim,
                 "X-averaged reaction overpotential": eta_r_av,
                 "X-averaged reaction overpotential [V]": eta_r_av_dim,
                 "X-averaged solid phase ohmic losses": delta_phi_s_av,
