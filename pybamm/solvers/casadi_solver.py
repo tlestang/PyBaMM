@@ -93,11 +93,11 @@ class CasadiSolver(pybamm.DaeSolver):
         """
         if self.mode == "fast":
             # Solve model normally by calling the solve method from parent class
-            return super().solve(model, t_eval)
+            return super().solve(model, t_eval, inputs=inputs)
         elif model.events == {}:
             pybamm.logger.info("No events found, running fast mode")
             # Solve model normally by calling the solve method from parent class
-            return super().solve(model, t_eval)
+            return super().solve(model, t_eval, inputs=inputs)
         elif self.mode == "safe":
             # Step-and-check
             timer = pybamm.Timer()
@@ -122,7 +122,7 @@ class CasadiSolver(pybamm.DaeSolver):
                     # different to t_eval, but shouldn't matter too much as it should
                     # only happen near events.
                     try:
-                        current_step_sol = self.step(model, dt)
+                        current_step_sol = self.step(model, dt, inputs=inputs)
                         solved = True
                     except pybamm.SolverError:
                         dt /= 2
@@ -199,12 +199,7 @@ class CasadiSolver(pybamm.DaeSolver):
         solve_start_time = timer.time()
         pybamm.logger.debug("Calling DAE solver")
         solution = self.integrate_casadi(
-            self.casadi_rhs,
-            self.casadi_algebraic,
-            self.y0,
-            t_eval,
-            inputs,
-            mass_matrix=model.mass_matrix.entries,
+            self.casadi_rhs, self.casadi_algebraic, self.y0, t_eval, inputs
         )
         solve_time = timer.time() - solve_start_time
 
@@ -213,9 +208,7 @@ class CasadiSolver(pybamm.DaeSolver):
 
         return solution, solve_time, termination
 
-    def integrate_casadi(
-        self, rhs, algebraic, y0, t_eval, inputs=None, mass_matrix=None
-    ):
+    def integrate_casadi(self, rhs, algebraic, y0, t_eval, inputs=None):
         """
         Solve a DAE model defined by residuals with initial conditions y0.
 
@@ -230,10 +223,6 @@ class CasadiSolver(pybamm.DaeSolver):
             The times at which to compute the solution
         inputs : dict, optional
             Any input parameters to pass to the model when solving
-        mass_matrix : array_like, optional
-            The (sparse) mass matrix for the chosen spatial method. This is only passed
-            to check that the mass matrix is diagonal with 1s for the odes and 0s for
-            the algebraic equations, as CasADi does not allow to pass mass matrices.
         """
         inputs = inputs or {}
         options = {
@@ -243,7 +232,6 @@ class CasadiSolver(pybamm.DaeSolver):
             "output_t0": True,
             "max_num_steps": self.max_steps,
         }
-        options.update(self.extra_options)
         if self.method == "idas":
             options["calc_ic"] = True
 
@@ -262,7 +250,7 @@ class CasadiSolver(pybamm.DaeSolver):
         try:
             # Try solving
             y0_diff, y0_alg = np.split(y0, [y_diff.shape[0]])
-            sol = integrator(x0=y0_diff, z0=y0_alg)
+            sol = integrator(x0=y0_diff, z0=y0_alg, **self.extra_options)
             y_values = np.concatenate([sol["xf"].full(), sol["zf"].full()])
             return pybamm.Solution(t_eval, y_values, None, None, "final time")
         except RuntimeError as e:
