@@ -220,11 +220,12 @@ class Simulation:
         solution = solver.step(
             self.built_model, dt, external_variables=external_variables, inputs=inputs
         )
-
+        
         if save is False or self._made_first_step is False:
             self._solution = solution
         elif self._solution.t[-1] == solution.t[-1]:
-            pass
+            self._solution.t_event = solution.t_event
+            self._solution.termination = solution.termination
         else:
             self._update_solution(solution)
 
@@ -237,6 +238,7 @@ class Simulation:
         self._solution.t = np.append(self._solution.t, solution.t[-1])
         self._solution.t_event = solution.t_event
         self._solution.termination = solution.termination
+#        print(self._solution.termination)
         self._solution.y = np.concatenate(
             [self._solution.y, solution.y[:, -1][:, np.newaxis]], axis=1
         )
