@@ -81,10 +81,7 @@ from .expression_tree.binary_operators import (
     Division,
     Inner,
     inner,
-    Outer,
-    Kron,
     Heaviside,
-    outer,
     source,
 )
 from .expression_tree.concatenations import (
@@ -103,6 +100,7 @@ from .expression_tree.parameter import Parameter, FunctionParameter
 from .expression_tree.broadcasts import (
     Broadcast,
     PrimaryBroadcast,
+    SecondaryBroadcast,
     FullBroadcast,
     ones_like,
 )
