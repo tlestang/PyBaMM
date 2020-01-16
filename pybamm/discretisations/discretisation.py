@@ -692,7 +692,9 @@ class Discretisation(object):
             # keep calling .id
             pybamm.logger.debug("Discretise {!r}".format(eqn_key))
 
-            new_var_eqn_dict[eqn_key] = self.process_symbol(eqn)
+            processed_eqn = self.process_symbol(eqn)
+
+            new_var_eqn_dict[eqn_key] = processed_eqn
 
         return new_var_eqn_dict
 
@@ -719,6 +721,18 @@ class Discretisation(object):
             # Testing shape is slow, so only do it in debug mode
             if pybamm.settings.debug_mode is True:
                 discretised_symbol.test_shape()
+            # Assign mesh as an attribute to the processed variable
+            if symbol.domain != []:
+                discretised_symbol.mesh = self.mesh.combine_submeshes(*symbol.domain)
+            else:
+                discretised_symbol.mesh = None
+            # Assign secondary mesh
+            if "secondary" in symbol.auxiliary_domains:
+                discretised_symbol.secondary_mesh = self.mesh.combine_submeshes(
+                    *symbol.auxiliary_domains["secondary"]
+                )
+            else:
+                discretised_symbol.secondary_mesh = None
             return discretised_symbol
 
     def _process_symbol(self, symbol):

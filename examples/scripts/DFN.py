@@ -52,5 +52,5 @@ plt.plot(t, R_1(t), "-", t, R_2(t), "o")
 plt.show()
 
 # plot
-plot = pybamm.QuickPlot(model, mesh, solution)
+plot = pybamm.QuickPlot(solution)
 plot.dynamic_plot()
