@@ -1,13 +1,18 @@
 import autograd.numpy as np
 
 
-def graphite_electrolyte_reaction_rate_Dualfoil1998(T, T_inf, E_r, R_g):
+def graphite_electrolyte_reaction_rate_Ecker2015(T, T_inf, E_r, R_g):
     """
     Reaction rate for Butler-Volmer reactions between graphite and LiPF6 in EC:DMC.
 
     References
     ----------
-    .. [2] http://www.cchem.berkeley.edu/jsngrp/fortran.html
+    .. [1] Ecker, Madeleine, et al. "Parameterization of a physico-chemical model of
+    a lithium-ion battery i. determination of parameters." Journal of the
+    Electrochemical Society 162.9 (2015): A1836-A1848.
+    .. [2] Ecker, Madeleine, et al. "Parameterization of a physico-chemical model of
+    a lithium-ion battery ii. model validation." Journal of The Electrochemical
+    Society 162.9 (2015): A1849-A1857.
 
     Parameters
     ----------
@@ -25,7 +30,7 @@ def graphite_electrolyte_reaction_rate_Dualfoil1998(T, T_inf, E_r, R_g):
     :`numpy.Array`
         Reaction rate
     """
-    m_ref = 2 * 10 ** (-5)
+    m_ref = 2.79 * 10 ** (-6)
     arrhenius = np.exp(E_r / R_g * (1 / T_inf - 1 / T))
 
     return m_ref * arrhenius

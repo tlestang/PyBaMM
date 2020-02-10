@@ -3,15 +3,17 @@ import autograd.numpy as np
 
 def electrolyte_diffusivity_Capiglia1999(c_e, T, T_inf, E_D_e, R_g):
     """
-    Diffusivity of LiPF6 in EC:DMC as a function of ion concentration. The original data
-    is from [1]. The fit from Dualfoil [2].
+    Diffusivity of LiPF6 in EC:DMC as a function of ion concentration [1, 2].
 
     References
     ----------
-    .. [1] C Capiglia et al. 7Li and 19F diffusion coefficients and thermal
-    properties of non-aqueous electrolyte solutions for rechargeable lithium batteries.
-    Journal of power sources 81 (1999): 859-862.
-    .. [2] http://www.cchem.berkeley.edu/jsngrp/fortran.html
+    .. [1] Ecker, Madeleine, et al. "Parameterization of a physico-chemical model of
+    a lithium-ion battery i. determination of parameters." Journal of the
+    Electrochemical Society 162.9 (2015): A1836-A1848.
+    .. [2] Ecker, Madeleine, et al. "Parameterization of a physico-chemical model of
+    a lithium-ion battery ii. model validation." Journal of The Electrochemical
+    Society 162.9 (2015): A1849-A1857.
+l
 
     Parameters
     ----------
