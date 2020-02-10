@@ -16,6 +16,7 @@ class TestSPM(unittest.TestCase):
 
     def test_basic_processing_1plus1D(self):
         options = {"current collector": "potential pair", "dimensionality": 1}
+
         model = pybamm.lithium_ion.SPM(options)
         var = pybamm.standard_spatial_vars
         var_pts = {
@@ -73,7 +74,7 @@ class TestSPM(unittest.TestCase):
         options = {"thermal": "isothermal"}
         model = pybamm.lithium_ion.SPM(options)
         parameter_values = model.default_parameter_values
-        parameter_values.update({"Typical current [A]": -1})
+        parameter_values.update({"Current function [A]": -1})
         modeltest = tests.StandardModelTest(model, parameter_values=parameter_values)
         modeltest.test_all()
 
@@ -81,7 +82,7 @@ class TestSPM(unittest.TestCase):
         options = {"thermal": "isothermal"}
         model = pybamm.lithium_ion.SPM(options)
         parameter_values = model.default_parameter_values
-        parameter_values.update({"Current function": "[zero]"})
+        parameter_values.update({"Current function [A]": 0})
         modeltest = tests.StandardModelTest(model, parameter_values=parameter_values)
         modeltest.test_all()
 
@@ -106,6 +107,8 @@ class TestSPM(unittest.TestCase):
 if __name__ == "__main__":
     print("Add -v for more debug output")
     import sys
+
+    sys.setrecursionlimit(10000)
 
     if "-v" in sys.argv:
         debug = True

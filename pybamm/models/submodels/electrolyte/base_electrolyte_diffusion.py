@@ -93,7 +93,7 @@ class BaseElectrolyteDiffusion(pybamm.BaseSubModel):
         """
 
         param = self.param
-        D_e_typ = param.D_e(param.c_e_typ, param.T_ref)
+        D_e_typ = param.D_e(param.c_e_typ, param.T_init)
         flux_scale = D_e_typ * param.c_e_typ / param.L_x
 
         variables = {
@@ -105,4 +105,8 @@ class BaseElectrolyteDiffusion(pybamm.BaseSubModel):
 
     def set_events(self, variables):
         c_e = variables["Electrolyte concentration"]
-        self.events["Zero electrolyte concentration cut-off"] = pybamm.min(c_e) - 0.002
+        self.events.append(pybamm.Event(
+            "Zero electrolyte concentration cut-off",
+            pybamm.min(c_e) - 0.002,
+            pybamm.EventType.TERMINATION
+        ))

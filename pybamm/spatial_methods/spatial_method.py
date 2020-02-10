@@ -3,7 +3,7 @@
 #
 import pybamm
 import numpy as np
-from scipy.sparse import eye, kron, coo_matrix, csr_matrix
+from scipy.sparse import eye, kron, coo_matrix, csr_matrix, vstack
 
 
 class SpatialMethod:
@@ -63,9 +63,12 @@ class SpatialMethod:
         """
         symbol_mesh = self.mesh.combine_submeshes(*symbol.domain)
         if symbol.name.endswith("_edge"):
-            return pybamm.Vector(symbol_mesh[0].edges, domain=symbol.domain)
+            entries = np.concatenate([mesh.edges for mesh in symbol_mesh])
         else:
-            return pybamm.Vector(symbol_mesh[0].nodes, domain=symbol.domain)
+            entries = np.concatenate([mesh.nodes for mesh in symbol_mesh])
+        return pybamm.Vector(
+            entries, domain=symbol.domain, auxiliary_domains=symbol.auxiliary_domains
+        )
 
     def broadcast(self, symbol, domain, auxiliary_domains, broadcast_type):
         """
@@ -86,21 +89,40 @@ class SpatialMethod:
             The discretised symbol of the correct size for the spatial method
         """
 
-        primary_pts_for_broadcast = sum(
+        primary_domain_size = sum(
             self.mesh[dom][0].npts_for_broadcast for dom in domain
         )
 
-        full_pts_for_broadcast = sum(
+        full_domain_size = sum(
             subdom.npts_for_broadcast for dom in domain for subdom in self.mesh[dom]
         )
 
         if broadcast_type == "primary":
-            out = pybamm.Outer(
-                symbol, pybamm.Vector(np.ones(primary_pts_for_broadcast), domain=domain)
+            # Make copies of the child stacked on top of each other
+            sub_vector = np.ones((primary_domain_size, 1))
+            if symbol.shape_for_testing == ():
+                out = symbol * pybamm.Vector(sub_vector)
+            else:
+                # Repeat for secondary points
+                matrix = csr_matrix(kron(eye(symbol.shape_for_testing[0]), sub_vector))
+                out = pybamm.Matrix(matrix) @ symbol
+            out.domain = domain
+        elif broadcast_type == "secondary":
+            secondary_domain_size = sum(
+                self.mesh[dom][0].npts_for_broadcast
+                for dom in auxiliary_domains["secondary"]
             )
-
+            kron_size = full_domain_size // primary_domain_size
+            # Symbol may be on edges so need to calculate size carefully
+            symbol_primary_size = symbol.shape[0] // kron_size
+            # Make copies of the child stacked on top of each other
+            identity = eye(symbol_primary_size)
+            sub_matrix = vstack([identity for _ in range(secondary_domain_size)])
+            # Repeat for secondary points
+            matrix = csr_matrix(kron(eye(kron_size), sub_matrix))
+            out = pybamm.Matrix(matrix) @ symbol
         elif broadcast_type == "full":
-            out = symbol * pybamm.Vector(np.ones(full_pts_for_broadcast), domain=domain)
+            out = symbol * pybamm.Vector(np.ones(full_domain_size), domain=domain)
 
         out.auxiliary_domains = auxiliary_domains
         return out
@@ -182,7 +204,6 @@ class SpatialMethod:
             The symbol that we will take the gradient of.
         discretised_symbol: :class:`pybamm.Symbol`
             The discretised symbol of the correct size
-
         boundary_conditions : dict
             The boundary conditions of the model
             ({symbol.id: {"left": left bc, "right": right bc}})
@@ -340,7 +361,7 @@ class SpatialMethod:
 
         out = bv_vector @ discretised_child
         # boundary value removes domain
-        out.domain = []
+        out.clear_domains()
         return out
 
     def mass_matrix(self, symbol, boundary_conditions):

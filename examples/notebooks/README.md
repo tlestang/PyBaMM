@@ -1,3 +1,7 @@
+# Getting started
+
+For new users we recommend the [Getting Started](./Getting%20Started/) notebooks. These are intended to be very simple step-by-step guides to show the basic functionality of PyBaMM. For more detailed notebooks, please see the examples listed below.
+
 # Examples
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/pybamm-team/PyBaMM/master)
@@ -11,7 +15,7 @@ $ jupyter notebook
 ```
 from your local PyBaMM repository, or used online through [Binder](https://mybinder.org/v2/gh/pybamm-team/PyBaMM/master), or you can simply copy/paste the relevant code.
 
-## Getting started
+## Using PyBaMM
 
 The easiest way to start with PyBaMM is by running and comparing some of the inbuilt models:
 - [Run the Single Particle Model (SPM)](./models/SPM.ipynb)
@@ -31,15 +35,22 @@ For more advanced usage, new sets of parameters, spatial methods and solvers can
 - [Add a spatial method](https://pybamm.readthedocs.io/en/latest/tutorials/add-spatial-method.html)
 - [Add a solver](https://pybamm.readthedocs.io/en/latest/tutorials/add-solver.html)
 
+
+
 ## Expression tree structure
 
 PyBaMM is built around an expression tree structure.
-[This](expression_tree/expression-tree.ipynb) notebook explains how this works, from
-model creation to solution.
+
+- [The expression tree notebook](expression_tree/expression-tree.ipynb) explains how this works, from model creation to solution. 
+- [The broadcast notebook](expression_tree/broadcasts.ipynb) explains the different types of broadcast. 
+
+The following notebooks are specific to different stages of the PyBaMM pipeline, such as choosing a model, spatial method, or solver.
 
 ### Models
 
-The following models are implemented and can easily be used or [compared](./models/lead-acid.ipynb). We always welcome [new models](https://pybamm.readthedocs.io/en/latest/tutorials/add-model.html)!
+Several battery models are implemented and can easily be used or [compared](./models/lead-acid.ipynb). The notebooks below show the solution of each individual model. We always welcome [new models](https://pybamm.readthedocs.io/en/latest/tutorials/add-model.html)!
+
+Once you are comfortable with the expression tree structure, a good starting point to understand the models in PyBaMM is to take a look at the [basic SPM](https://github.com/pybamm-team/PyBaMM/blob/master/pybamm/models/full_battery_models/lithium_ion/basic_spm.py) and [basic DFN](https://github.com/pybamm-team/PyBaMM/blob/master/pybamm/models/full_battery_models/lithium_ion/basic_dfn.py), since these define the entire model (variables, equations, initial and boundary conditions, events) in a single class and so are easier to understand. However, we recommend that you subsequently use the full models as they offer much greater flexibility for coupling different physical effects and visualising a greater range of variables.
 
 #### Lithium-ion models
 
@@ -63,9 +74,9 @@ See [here](https://pybamm.readthedocs.io/en/latest/tutorials/add-spatial-method.
 
 ### Solvers
 
-The following solvers are implemented
-- Scipy ODE solver
-- [Scikits ODE solver](./solvers/scikits-ode-solver.ipynb)
-- [Scikits DAE solver](./solvers/scikits-dae-solver.ipynb)
+The following notebooks show examples for generic ODE and DAE solvers. Several solvers are implemented in PyBaMM and we encourage users to try different ones to find the most appropriate one for their models.
+
+- [ODE solver](./solvers/ode-solver.ipynb)
+- [DAE solver](./solvers/dae-solver.ipynb)
 
 See [here](https://pybamm.readthedocs.io/en/latest/tutorials/add-solver.html) for instructions on adding new solvers.
