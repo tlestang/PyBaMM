@@ -1,7 +1,7 @@
 import autograd.numpy as np
 
 
-def electrolyte_diffusivity_Capiglia1999(c_e, T, T_inf, E_D_e, R_g):
+def electrolyte_diffusivity_Ecker2015(c_e, T, T_inf, E_D_e, R_g):
     """
     Diffusivity of LiPF6 in EC:DMC as a function of ion concentration [1, 2].
 
@@ -34,7 +34,7 @@ l
         Solid diffusivity
     """
 
-    D_c_e = 5.34e-10 * np.exp(-0.65 * c_e / 1000)
+    D_c_e = 2.4 * 10 ** (-10)
     arrhenius = np.exp(E_D_e / R_g * (1 / T_inf - 1 / T))
 
     return D_c_e * arrhenius

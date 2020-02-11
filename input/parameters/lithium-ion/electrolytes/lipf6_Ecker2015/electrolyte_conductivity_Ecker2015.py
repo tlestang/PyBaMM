@@ -1,7 +1,7 @@
 import autograd.numpy as np
 
 
-def electrolyte_conductivity_Capiglia1999(c_e, T, T_inf, E_k_e, R_g):
+def electrolyte_conductivity_Ecker2015(c_e, T, T_inf, E_k_e, R_g):
     """
     Conductivity of LiPF6 in EC:DMC as a function of ion concentration [1, 2].
 
