@@ -1,4 +1,4 @@
-import autograd.numpy as np
+from pybamm import exp
 
 
 def electrolyte_diffusivity_Ecker2015(c_e, T, T_inf, E_D_e, R_g):
@@ -35,6 +35,6 @@ l
     """
 
     D_c_e = 2.4 * 10 ** (-10)
-    arrhenius = np.exp(E_D_e / R_g * (1 / T_inf - 1 / T))
+    arrhenius = exp(E_D_e / R_g * (1 / T_inf - 1 / T))
 
     return D_c_e * arrhenius

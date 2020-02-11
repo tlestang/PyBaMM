@@ -1,4 +1,4 @@
-import autograd.numpy as np
+from pybamm import exp
 
 
 def graphite_electrolyte_reaction_rate_Ecker2015(T, T_inf, E_r, R_g):
@@ -31,6 +31,6 @@ def graphite_electrolyte_reaction_rate_Ecker2015(T, T_inf, E_r, R_g):
         Reaction rate
     """
     m_ref = 2.79 * 10 ** (-6)
-    arrhenius = np.exp(E_r / R_g * (1 / T_inf - 1 / T))
+    arrhenius = exp(E_r / R_g * (1 / T_inf - 1 / T))
 
     return m_ref * arrhenius

@@ -1,4 +1,4 @@
-import autograd.numpy as np
+from pybamm import exp
 
 
 def electrolyte_conductivity_Ecker2015(c_e, T, T_inf, E_k_e, R_g):
@@ -43,6 +43,6 @@ def electrolyte_conductivity_Ecker2015(c_e, T, T_inf, E_k_e, R_g):
 
     # In Ecker paper there is factor of 1/T out the front but this doesn't
     # make much sense so just going to leave it out for now
-    arrhenius = np.exp(E_k_e / R_g * (1 / T_inf - 1 / T))
+    arrhenius = exp(E_k_e / R_g * (1 / T_inf - 1 / T))
 
     return sigma_e * arrhenius

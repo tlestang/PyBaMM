@@ -196,12 +196,6 @@ def U_p_dimensional(sto, T):
     return u_ref + (T - T_ref) * dUdT_p_dimensional(sto)
 
 
-# can maybe improve ref value at some stage
-U_n_ref = U_n_dimensional(pybamm.Scalar(0.7), T_ref)
-
-# can maybe improve ref value at some stage
-U_p_ref = U_p_dimensional(pybamm.Scalar(0.7), T_ref)
-
 m_n_ref_dimensional = m_n_dimensional(T_ref)
 m_p_ref_dimensional = m_p_dimensional(T_ref)
 
@@ -327,6 +321,15 @@ C_dl_p = (
     C_dl_dimensional * potential_scale / interfacial_current_scale_p / tau_discharge
 )
 
+# Initial conditions
+c_e_init = c_e_init_dimensional / c_e_typ
+c_n_init = c_n_init_dimensional / c_n_max
+c_p_init = c_p_init_dimensional / c_p_max
+T_init = pybamm.thermal_parameters.T_init
+
+U_n_ref = U_n_dimensional(pybamm.Scalar(0.7), T_ref)
+U_p_ref = U_p_dimensional(pybamm.Scalar(0.7), T_ref)
+
 # Electrical
 voltage_low_cut = (voltage_low_cut_dimensional - (U_p_ref - U_n_ref)) / potential_scale
 voltage_high_cut = (
@@ -360,12 +363,6 @@ B = (
     * tau_th_yz
     / (pybamm.thermal_parameters.rho_eff_dim * F * Delta_T * L_x)
 )
-
-# Initial conditions
-c_e_init = c_e_init_dimensional / c_e_typ
-c_n_init = c_n_init_dimensional / c_n_max
-c_p_init = c_p_init_dimensional / c_p_max
-T_init = pybamm.thermal_parameters.T_init
 
 
 # --------------------------------------------------------------------------------------

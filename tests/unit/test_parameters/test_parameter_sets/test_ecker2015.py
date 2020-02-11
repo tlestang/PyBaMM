@@ -40,7 +40,8 @@ class TestEcker(unittest.TestCase):
         sim = pybamm.Simulation(model, parameter_values=parameter_values)
         sim.set_parameters()
 
-        # sim.build()
+        sim.build()
+        sim.solve()
 
 
 if __name__ == "__main__":
