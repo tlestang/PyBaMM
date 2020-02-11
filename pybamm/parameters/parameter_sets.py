@@ -11,6 +11,9 @@ Marquis2019
     Chapman. "An asymptotic derivation of a single particle model with electrolyte."
     `arXiv preprint arXiv:1905.12553 <https://arxiv.org/abs/1905.12553>`_ (2019).
 
+Ecker2015
+    Ecker, Madeleine, et al. "Parameterization of a physico-chemical model of a lithium-ion battery i. determination of parameters." Journal of the Electrochemical Society 162.9 (2015): A1836-A1848.
+    Ecker, Madeleine, et al. "Parameterization of a physico-chemical model of a lithium-ion battery II. Model validation." Journal of The Electrochemical Society 162.9 (2015): A1849-A1857.
 
 Lead-acid
 ---------
@@ -32,6 +35,16 @@ Marquis2019 = {
     "cathode": "lico2_Marquis2019",
     "electrolyte": "lipf6_Marquis2019",
     "experiment": "1C_discharge_from_full_Marquis2019",
+}
+
+Ecker2015 = {
+    "chemistry": "lithium-ion",
+    "cell": "kokam_Ecker2015",
+    "anode": "graphite_Ecker2015",
+    "separator": "separator_Ecker2015",
+    "cathode": "LiNiCoO2_Ecker2015",
+    "electrolyte": "lipf6_Ecker2015",
+    "experiment": "1C_discharge_from_full_Ecker2015",
 }
 
 #

@@ -33,4 +33,5 @@ Negative current collector thermal conductivity [W.m-1.K-1],N/A,,
 Positive current collector thermal conductivity [W.m-1.K-1],N/A,,
 ,,,
 # Electrical,,,
-Cell capacity [A.h],N/A,,
+Cell capacity [A.h],0.326,,7.5 [A.h] cell with 23 layers
+Typical current [A],0.325,,1C current
