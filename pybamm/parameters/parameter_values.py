@@ -187,11 +187,12 @@ class ParameterValues:
                 and name in self.keys()
                 and not (self[name] == float(value) or self[name] == value)
             ):
-                raise ValueError(
-                    "parameter '{}' already defined with value '{}'".format(
-                        name, self[name]
-                    )
-                )
+                print("Skipping value error")
+                # raise ValueError(
+                #     "parameter '{}' already defined with value '{}'".format(
+                #         name, self[name]
+                #     )
+                # )
             # check parameter already exists (for updating parameters)
             if check_already_exists is True:
                 try:
