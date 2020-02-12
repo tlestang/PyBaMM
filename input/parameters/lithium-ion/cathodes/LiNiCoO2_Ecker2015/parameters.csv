@@ -27,7 +27,7 @@ Positive electrode double-layer capacity [F.m-2],0.2,,
 
 ,,,
 # Thermal parameters,,,
-Positive electrode OCP entropic change [V.K-1],0,,
+Positive electrode OCP entropic change [V.K-1],[function]nco_entropic_change_NULL,,
 ,,,
 # Activation energies,,,
 Reference temperature [K],296.15,23C,
