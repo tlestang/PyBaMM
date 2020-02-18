@@ -253,6 +253,11 @@ class BaseBatteryModel(pybamm.BaseModel):
 
         self._options = options
 
+    @property
+    def timescale(self):
+        "Default timescale for a battery model is the discharge timescale"
+        return self.param.tau_discharge
+
     def set_standard_output_variables(self):
         # Standard output variables
 
@@ -698,8 +703,8 @@ class BaseBatteryModel(pybamm.BaseModel):
         ocv = ocp_p_right - ocp_n_left
         ocv_dim = ocp_p_right_dim - ocp_n_left_dim
         ocv_init = self.param.U_p(
-            self.param.c_p_init, self.param.T_init
-        ) - self.param.U_n(self.param.c_n_init, self.param.T_init)
+            self.param.c_p_init(1), self.param.T_init
+        ) - self.param.U_n(self.param.c_n_init(0), self.param.T_init)
         ocv_init_dim = (
             self.param.U_p_ref
             - self.param.U_n_ref
@@ -818,8 +823,20 @@ class BaseBatteryModel(pybamm.BaseModel):
 
         # Cut-off voltage
         voltage = self.variables["Terminal voltage"]
-        self.events["Minimum voltage"] = voltage - self.param.voltage_low_cut
-        self.events["Maximum voltage"] = voltage - self.param.voltage_high_cut
+        self.events.append(
+            pybamm.Event(
+                "Minimum voltage",
+                voltage - self.param.voltage_low_cut,
+                pybamm.EventType.TERMINATION,
+            )
+        )
+        self.events.append(
+            pybamm.Event(
+                "Maximum voltage",
+                voltage - self.param.voltage_high_cut,
+                pybamm.EventType.TERMINATION,
+            )
+        )
 
         # Power
         I_dim = self.variables["Current [A]"]
@@ -859,8 +876,11 @@ class BaseBatteryModel(pybamm.BaseModel):
             variables = list(self.rhs.keys()) + list(self.algebraic.keys())
             disc.set_variable_slices(variables)
 
-        # Set boundary condtions
+        # Set boundary condtions (also requires setting parameter values)
         if disc.bcs == {}:
+            self.boundary_conditions = parameter_values.process_boundary_conditions(
+                self
+            )
             disc.bcs = disc.process_boundary_conditions(self)
 
         # Process
