@@ -542,7 +542,7 @@ class BaseSolver(object):
 
         # Add model and inputs to solution
         solution.model = model
-        solution.inputs = inputs
+        solution.inputs = ext_and_inputs
 
         # Identify the event that caused termination
         termination = self.get_termination_reason(solution, model.events)
@@ -638,7 +638,7 @@ class BaseSolver(object):
 
         # Add model and inputs to solution
         solution.model = model
-        solution.inputs = inputs
+        solution.inputs = ext_and_inputs
 
         # Identify the event that caused termination
         termination = self.get_termination_reason(solution, model.events)
