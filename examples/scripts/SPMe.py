@@ -31,5 +31,13 @@ t_eval = np.linspace(0, 3600, 100)
 solution = model.default_solver.solve(model, t_eval)
 
 # plot
-plot = pybamm.QuickPlot(solution)
+overpotentials = [
+        "X-averaged reaction overpotential [V]",
+        "X-averaged concentration overpotential [V]",
+        "X-averaged electrolyte ohmic losses [V]",
+        "X-averaged solid phase ohmic losses [V]",
+        "Change in measured open circuit voltage [V]",
+        "Local ECM resistance [Ohm]"
+    ]
+plot = pybamm.QuickPlot(solution, output_variables=overpotentials)
 plot.dynamic_plot()
