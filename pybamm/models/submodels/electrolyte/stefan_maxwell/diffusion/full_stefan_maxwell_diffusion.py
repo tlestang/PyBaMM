@@ -52,7 +52,7 @@ class Full(BaseModel):
         N_e = N_e_diffusion + c_e * v_box
 
         variables.update(self._get_standard_flux_variables(N_e))
-
+        variables.update({"D_e": param.D_e(c_e, T)})
         return variables
 
     def set_rhs(self, variables):
@@ -67,25 +67,15 @@ class Full(BaseModel):
 
         # source_term = ((param.s - param.t_plus) / param.gamma_e) * pybamm.div(i_e)
         # source_term = pybamm.div(i_e) / param.gamma_e  # lithium-ion
-        if self.const_diff:
-            # Note: only correct for single (main) reaction
-            i_e_n = variables["Negative electrolyte current density"]
-            i_e_p = variables["Positive electrolyte current density"]
-            source_terms = pybamm.Concatenation(
-                (1 - param.t_plus) * i_e_n / param.l_n,
+        source_terms = sum(
+            pybamm.Concatenation(
+                reaction["Negative"]["s"] * variables[reaction["Negative"]["aj"]],
                 pybamm.FullBroadcast(0, "separator", "current collector"),
-                (1 - param.t_plus) * i_e_p / param.l_p,
+                reaction["Positive"]["s"] * variables[reaction["Positive"]["aj"]],
             )
-        else:
-            source_terms = sum(
-                pybamm.Concatenation(
-                    reaction["Negative"]["s"] * variables[reaction["Negative"]["aj"]],
-                    pybamm.FullBroadcast(0, "separator", "current collector"),
-                    reaction["Positive"]["s"] * variables[reaction["Positive"]["aj"]],
-                )
-                / param.gamma_e
-                for reaction in self.reactions.values()
-            )
+            / param.gamma_e
+            for reaction in self.reactions.values()
+        )
 
         self.rhs = {
             c_e: (1 / eps)

@@ -13,9 +13,9 @@ voltage_data_7_5C = pd.read_csv("ddliion/voltage_7_5C.dat", sep="\t")
 
 # set up models
 models = {
-    "SPM": pybamm.lithium_ion.SPM(),
-    "SPMe": pybamm.lithium_ion.SPMe(),
-    "DFN": pybamm.lithium_ion.DFN(),
+    "SPM": pybamm.lithium_ion.BasicSPM(),
+    "SPMe": pybamm.lithium_ion.BasicSPMe(),
+    "DFN": pybamm.lithium_ion.BasicDFN(),
 }
 
 # pick parameters, keeping C-rate as an input to be changed for each solve
@@ -81,6 +81,8 @@ for i, C_rate in enumerate(C_rates):
 print("Finished")
 
 # qp = pybamm.QuickPlot(solutions["SPMe"][3])
+# qp.dynamic_plot()
+# qp = pybamm.QuickPlot(solutions["DFN"][3])
 # qp.dynamic_plot()
 
 # plot - could be made more efficiently, but oh well...

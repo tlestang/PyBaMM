@@ -16,18 +16,22 @@ else:
     pybamm.set_logging_level("INFO")
 
 # load models
-options = {"thermal": "isothermal"}
 models = [
-    pybamm.lithium_ion.SPM(options),
-    pybamm.lithium_ion.SPMe(options),
-    pybamm.lithium_ion.DFN(options),
+    # pybamm.lithium_ion.BasicSPM(name="BasicSPM"),
+    # pybamm.lithium_ion.SPM(name="SPM"),
+    pybamm.lithium_ion.BasicSPMe(name="Basic SPMe"),
+    pybamm.lithium_ion.SPMe(name="SPMe"),
+    # pybamm.lithium_ion.BasicDFN(name="BasicDFN"),
+    # pybamm.lithium_ion.DFN(name="DFN"),
 ]
 
 
 # load parameter values and process models and geometry
-param = models[0].default_parameter_values
-param["Current function [A]"] = 1
-
+# param = models[0].default_parameter_values
+chemistry = pybamm.parameter_sets.Ecker2015
+param = pybamm.ParameterValues(chemistry=chemistry)
+# param["Current function [A]"] = 1
+param.update({"C-rate": 7.5})
 for model in models:
     param.process_model(model)
 
@@ -46,10 +50,12 @@ for model in models:
 
 # solve model
 solutions = [None] * len(models)
-t_eval = np.linspace(0, 3600, 100)
+t_eval = np.linspace(0, 3600 / param["C-rate"], 100)
 for i, model in enumerate(models):
-    solutions[i] = model.default_solver.solve(model, t_eval)
+    solutions[i] = pybamm.CasadiSolver().solve(model, t_eval)
 
 # plot
-plot = pybamm.QuickPlot(solutions)
+quick_plot_vars = ["Electrolyte concentration", "D_e", "Terminal voltage [V]"]
+quick_plot_vars = list(models[0].variables.keys())
+plot = pybamm.QuickPlot(solutions, output_variables=quick_plot_vars)
 plot.dynamic_plot()

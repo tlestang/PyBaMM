@@ -115,7 +115,7 @@ class SPMe(BaseModel):
             self.param
         )
         self.submodels["electrolyte diffusion"] = electrolyte.diffusion.Full(
-            self.param, self.reactions, const_diff=True
+            self.param, self.reactions, const_diff=False
         )
 
     @property

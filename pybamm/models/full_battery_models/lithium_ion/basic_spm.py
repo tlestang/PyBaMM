@@ -34,7 +34,6 @@ class BasicSPM(BaseModel):
         # this model. These are purely symbolic at this stage, and will be set by the
         # `ParameterValues` class when the model is processed.
         param = self.param
-        self.timescale = param.tau_discharge
 
         ######################
         # Variables
@@ -179,7 +178,7 @@ class BasicSPM(BaseModel):
             "Terminal voltage [V]": param.U_p_ref
             - param.U_n_ref
             + param.potential_scale * V,
-            "Time [s]": pybamm.t * self.timescale,
+            "Time [s]": pybamm.t * param.timescale,
         }
         self.events += [
             pybamm.Event("Minimum voltage", V - param.voltage_low_cut),
