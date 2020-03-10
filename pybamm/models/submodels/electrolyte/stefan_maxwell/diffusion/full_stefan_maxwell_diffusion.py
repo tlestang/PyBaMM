@@ -21,8 +21,7 @@ class Full(BaseModel):
     **Extends:** :class:`pybamm.electrolyte.stefan_maxwell.diffusion.BaseModel`
     """
 
-    def __init__(self, param, reactions, const_diff=False):
-        self.const_diff = const_diff
+    def __init__(self, param, reactions):
         super().__init__(param, reactions)
 
     def get_fundamental_variables(self):
@@ -40,10 +39,7 @@ class Full(BaseModel):
 
         param = self.param
 
-        if self.const_diff:
-            N_e_diffusion = -tor * param.D_e(1, T) * pybamm.grad(c_e)
-        else:
-            N_e_diffusion = -tor * param.D_e(c_e, T) * pybamm.grad(c_e)
+        N_e_diffusion = -tor * param.D_e(c_e, T) * pybamm.grad(c_e)
         # N_e_migration = (param.C_e * param.t_plus) / param.gamma_e * i_e
         # N_e_convection = c_e * v_box
 

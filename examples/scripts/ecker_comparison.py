@@ -14,7 +14,9 @@ voltage_data_7_5C = pd.read_csv("ddliion/voltage_7_5C.dat", sep="\t")
 # set up models
 models = {
     "SPM": pybamm.lithium_ion.BasicSPM(),
-    "SPMe": pybamm.lithium_ion.BasicSPMe(),
+    # "SPMe": pybamm.lithium_ion.BasicSPMe(linear_diffusion=False),
+    # "SPMe": pybamm.lithium_ion.BasicSPMe(linear_diffusion=True),
+    "SPMe": pybamm.lithium_ion.BasicSPMe(linear_diffusion=True, wrong_av=True),
     "DFN": pybamm.lithium_ion.BasicDFN(),
 }
 

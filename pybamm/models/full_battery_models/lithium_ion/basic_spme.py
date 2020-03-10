@@ -30,7 +30,12 @@ class BasicSPMe(BaseModel):
     **Extends:** :class:`pybamm.lithium_ion.BaseModel`
     """
 
-    def __init__(self, name="Single Particle Model with electrolyte"):
+    def __init__(
+        self,
+        name="Single Particle Model with electrolyte",
+        linear_diffusion=True,
+        wrong_av=False,
+    ):
         super().__init__({}, name)
         # `param` is a class containing all the relevant parameters and functions for
         # this model. These are purely symbolic at this stage, and will be set by the
@@ -134,8 +139,13 @@ class BasicSPMe(BaseModel):
         ######################
         # Electrolyte concentration
         ######################
-        # For the linear SPMe we evaluate the diffusivity at the typical value
-        N_e = -tor * param.D_e(1, T) * pybamm.grad(c_e)
+        if linear_diffusion:
+            # For the linear SPMe we evaluate the diffusivity at the typical value
+            N_e = -tor * param.D_e(1, T) * pybamm.grad(c_e)
+        else:
+            # Otherwise evaluate diffusivity using c_e
+            N_e = -tor * param.D_e(c_e, T) * pybamm.grad(c_e)
+
         # We create a concatenation for the reaction current
         j = pybamm.Concatenation(
             pybamm.PrimaryBroadcast(j_n, "negative electrode"),
@@ -157,33 +167,42 @@ class BasicSPMe(BaseModel):
         U_n = param.U_n(c_s_surf_n, T)
         U_p = param.U_p(c_s_surf_p, T)
         ocv = U_p - U_n
-        c_e_n_non_neg = (c_e_n + pybamm.Function(np.abs, c_e_n)) / 2
-        c_e_s_non_neg = (c_e_s + pybamm.Function(np.abs, c_e_s)) / 2
-        c_e_p_non_neg = (c_e_p + pybamm.Function(np.abs, c_e_p)) / 2
-        c_e_non_neg = pybamm.Concatenation(c_e_n_non_neg, c_e_s_non_neg, c_e_p_non_neg)
 
-        j0_n = pybamm.x_average(
-            param.m_n(T)
-            / param.C_r_n
-            * c_s_surf_n ** (1 / 2)
-            * (1 - c_s_surf_n) ** (1 / 2)
-            * (c_e_n_non_neg) ** (1 / 2)
-        )
-        j0_p = pybamm.x_average(
-            param.gamma_p
-            * param.m_p(T)
-            / param.C_r_p
-            * c_s_surf_p ** (1 / 2)
-            * (1 - c_s_surf_p) ** (1 / 2)
-            * (c_e_p_non_neg) ** (1 / 2)
-        )
+        if wrong_av:
+            # j0(av) rather than av(j0)
+            j0_n = (
+                (param.m_n(T) / param.C_r_n)
+                * c_s_surf_n ** (1 / 2)
+                * (1 - c_s_surf_n) ** (1 / 2)
+                * (pybamm.x_average(c_e_n)) ** (1 / 2)
+            )
+            j0_p = (
+                (param.gamma_p * param.m_p(T) / param.C_r_p)
+                * c_s_surf_p ** (1 / 2)
+                * (1 - c_s_surf_p) ** (1 / 2)
+                * (pybamm.x_average(c_e_p)) ** (1 / 2)
+            )
+        else:
+            j0_n = pybamm.x_average(
+                param.m_n(T)
+                / param.C_r_n
+                * c_s_surf_n ** (1 / 2)
+                * (1 - c_s_surf_n) ** (1 / 2)
+                * (c_e_n) ** (1 / 2)
+            )
+            j0_p = pybamm.x_average(
+                param.gamma_p
+                * param.m_p(T)
+                / param.C_r_p
+                * c_s_surf_p ** (1 / 2)
+                * (1 - c_s_surf_p) ** (1 / 2)
+                * (c_e_p) ** (1 / 2)
+            )
         eta_n = (2 / param.ne_n) * pybamm.arcsinh(j_n / (2 * j0_n))
         eta_p = (2 / param.ne_p) * pybamm.arcsinh(j_p / (2 * j0_p))
         eta_r = eta_p - eta_n
         eta_c = (
-            2
-            * (1 - param.t_plus)
-            * (pybamm.x_average(c_e_p_non_neg) - pybamm.x_average(c_e_n_non_neg))
+            2 * (1 - param.t_plus) * (pybamm.x_average(c_e_p) - pybamm.x_average(c_e_n))
         )
         delta_phi_e_av = -(
             param.C_e * i_cell / (param.gamma_e * param.kappa_e(1, T))
@@ -198,7 +217,7 @@ class BasicSPMe(BaseModel):
         V = ocv + eta_r + eta_c + delta_phi_e_av + delta_phi_s_av
         whole_cell = ["negative electrode", "separator", "positive electrode"]
         self.variables = {
-            "Electrolyte concentration": c_e_non_neg,
+            "Electrolyte concentration": c_e,
             "Terminal voltage": V,
             "Terminal voltage [V]": param.U_p_ref
             - param.U_n_ref
