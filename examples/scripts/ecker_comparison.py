@@ -16,7 +16,7 @@ models = {
     "SPM": pybamm.lithium_ion.BasicSPM(),
     # "SPMe": pybamm.lithium_ion.BasicSPMe(linear_diffusion=False),
     # "SPMe": pybamm.lithium_ion.BasicSPMe(linear_diffusion=True),
-    "SPMe": pybamm.lithium_ion.BasicSPMe(linear_diffusion=True, wrong_av=True),
+    "SPMe": pybamm.lithium_ion.BasicSPMe(linear_diffusion=True, wrong_av=False),
     "DFN": pybamm.lithium_ion.BasicDFN(),
 }
 

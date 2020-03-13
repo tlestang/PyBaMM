@@ -22,7 +22,7 @@ models = [
     pybamm.lithium_ion.BasicSPMe(name="Basic SPMe"),
     pybamm.lithium_ion.SPMe(name="SPMe"),
     # pybamm.lithium_ion.BasicDFN(name="BasicDFN"),
-    # pybamm.lithium_ion.DFN(name="DFN"),
+    pybamm.lithium_ion.DFN(name="DFN"),
 ]
 
 
@@ -37,7 +37,13 @@ for model in models:
 
 # set mesh
 var = pybamm.standard_spatial_vars
-var_pts = {var.x_n: 10, var.x_s: 10, var.x_p: 10, var.r_n: 5, var.r_p: 5}
+var_pts = {
+    var.x_n: int(param.evaluate(pybamm.geometric_parameters.L_n / 1e-6)),
+    var.x_s: int(param.evaluate(pybamm.geometric_parameters.L_s / 1e-6)),
+    var.x_p: int(param.evaluate(pybamm.geometric_parameters.L_p / 1e-6)),
+    var.r_n: int(param.evaluate(pybamm.geometric_parameters.R_n / 1e-7)),
+    var.r_p: int(param.evaluate(pybamm.geometric_parameters.R_p / 1e-7)),
+}
 
 # discretise models
 for model in models:
@@ -55,7 +61,7 @@ for i, model in enumerate(models):
     solutions[i] = pybamm.CasadiSolver().solve(model, t_eval)
 
 # plot
-quick_plot_vars = ["Electrolyte concentration", "D_e", "Terminal voltage [V]"]
-quick_plot_vars = list(models[0].variables.keys())
+quick_plot_vars = ["Electrolyte concentration", "Terminal voltage [V]"]
+# quick_plot_vars = list(models[0].variables.keys())
 plot = pybamm.QuickPlot(solutions, output_variables=quick_plot_vars)
 plot.dynamic_plot()
