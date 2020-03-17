@@ -1,19 +1,9 @@
-#
-# Compare lithium-ion battery models
-#
-import argparse
 import numpy as np
 import pybamm
+import pandas as pd
+import matplotlib.pyplot as plt
 
-parser = argparse.ArgumentParser()
-parser.add_argument(
-    "--debug", action="store_true", help="Set logging level to 'DEBUG'."
-)
-args = parser.parse_args()
-if args.debug:
-    pybamm.set_logging_level("DEBUG")
-else:
-    pybamm.set_logging_level("INFO")
+pybamm.set_logging_level("INFO")
 
 # load models
 models = [
@@ -22,15 +12,13 @@ models = [
     pybamm.lithium_ion.BasicSPMe(name="Basic SPMe"),
     # pybamm.lithium_ion.SPMe(name="SPMe"),
     # pybamm.lithium_ion.BasicDFN(name="BasicDFN"),
-    pybamm.lithium_ion.DFN(name="DFN"),
+    # pybamm.lithium_ion.DFN(name="DFN"),
 ]
 
 
 # load parameter values and process models and geometry
-# param = models[0].default_parameter_values
 chemistry = pybamm.parameter_sets.Ecker2015
 param = pybamm.ParameterValues(chemistry=chemistry)
-# param["Current function [A]"] = 1
 param.update({"C-rate": 7.5})
 for model in models:
     param.process_model(model)
@@ -56,12 +44,44 @@ for model in models:
 
 # solve model
 solutions = [None] * len(models)
-t_eval = np.linspace(0, 3600 / param["C-rate"], 100)
+t_eval = np.linspace(0, 440, 1000)
 for i, model in enumerate(models):
-    solutions[i] = pybamm.CasadiSolver().solve(model, t_eval)
+    solutions[i] = pybamm.CasadiSolver(mode="fast").solve(model, t_eval)
 
 # plot
-quick_plot_vars = ["Electrolyte concentration", "Terminal voltage [V]"]
-# quick_plot_vars = list(models[0].variables.keys())
-plot = pybamm.QuickPlot(solutions, output_variables=quick_plot_vars)
-plot.dynamic_plot()
+ddliion = pd.read_csv("ddliion/concentration_liquid.dat", sep="\t").to_numpy()
+x_ddlion = ddliion[:, 0]
+c_e_ddliion = ddliion[:, 1:]
+
+c_e_dict = {}
+for i, model in enumerate(models):
+    c_e_dict[model.name] = solutions[i]["Electrolyte concentration [mol.m-3]"]
+
+times = [0, 50, 100, 150, 200, 250, 300, 350, 400, 438.4]
+L_x = param.evaluate(pybamm.geometric_parameters.L_x)
+timescale = model.timescale.evaluate()
+
+linestyles = ["solid", "dashed", "solid", "dashdot"]
+colors = ["blue", "green", "black", "orange"]
+plt.figure()
+for i, time in enumerate(times):
+    plt.plot(
+        x_ddlion,
+        c_e_ddliion[:, i],
+        label="Dandeliion" if i == 0 else "",
+        linestyle=linestyles[-1],
+        color=colors[-1],
+    )
+    for j, model in enumerate(models):
+        plt.plot(
+            x_ddlion,
+            c_e_dict[model.name](x=x_ddlion * 1e-6 / L_x, t=time / timescale),
+            label="{}".format(model.name) if i == 0 else "",
+            linestyle=linestyles[j],
+            color=colors[j],
+        )
+
+plt.xlabel("x [m]")
+plt.ylabel("c [mol.m-3]")
+plt.legend()
+plt.show()

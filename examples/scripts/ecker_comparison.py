@@ -15,8 +15,8 @@ voltage_data_7_5C = pd.read_csv("ddliion/voltage_7_5C.dat", sep="\t")
 models = {
     "SPM": pybamm.lithium_ion.BasicSPM(),
     # "SPMe": pybamm.lithium_ion.BasicSPMe(linear_diffusion=False),
-    # "SPMe": pybamm.lithium_ion.BasicSPMe(linear_diffusion=True),
-    "SPMe": pybamm.lithium_ion.BasicSPMe(linear_diffusion=True, wrong_av=False),
+    "SPMe": pybamm.lithium_ion.BasicSPMe(linear_diffusion=True),
+    # "SPMe": pybamm.lithium_ion.BasicSPMe(linear_diffusion=True, wrong_av=True),
     "DFN": pybamm.lithium_ion.BasicDFN(),
 }
 
@@ -92,6 +92,8 @@ fig, ax = plt.subplots(2, 2, figsize=(6, 5))
 fig.subplots_adjust(left=0.1, bottom=0.1, right=0.95, top=0.85, wspace=0.3, hspace=0.5)
 linestyles = ["solid", "dashed", "solid", "dashdot"]
 colors = ["blue", "green", "black", "orange"]
+markers = [None, "o", None, None]
+markevery = 100
 V_major_ticks = np.arange(2.4, 4.2, 0.2)
 V_minor_ticks = np.arange(2.5, 4.1, 0.2)
 
@@ -100,7 +102,13 @@ for i, key in enumerate(solutions.keys()):
     t = solutions[key][0]["Time [s]"](solutions[key][0].t)
     V = solutions[key][0]["Terminal voltage [V]"](solutions[key][0].t)
     ax[0, 0].plot(
-        t, V, label=key + "(PyBaMM)", linestyle=linestyles[i], color=colors[i]
+        t,
+        V,
+        label=key + "(PyBaMM)",
+        linestyle=linestyles[i],
+        color=colors[i],
+        marker=markers[i],
+        markevery=markevery,
     )
 ax[0, 0].plot(
     voltage_data_1C["t(s)"],
@@ -128,7 +136,13 @@ for i, key in enumerate(solutions.keys()):
     t = solutions[key][1]["Time [s]"](solutions[key][1].t)
     V = solutions[key][1]["Terminal voltage [V]"](solutions[key][1].t)
     ax[0, 1].plot(
-        t, V, label=key + "(PyBaMM)", linestyle=linestyles[i], color=colors[i]
+        t,
+        V,
+        label=key + "(PyBaMM)",
+        linestyle=linestyles[i],
+        color=colors[i],
+        marker=markers[i],
+        markevery=markevery,
     )
 ax[0, 1].plot(
     voltage_data_2_5C["t(s)"],
@@ -156,7 +170,13 @@ for i, key in enumerate(solutions.keys()):
     t = solutions[key][2]["Time [s]"](solutions[key][2].t)
     V = solutions[key][2]["Terminal voltage [V]"](solutions[key][2].t)
     ax[1, 0].plot(
-        t, V, label=key + "(PyBaMM)", linestyle=linestyles[i], color=colors[i]
+        t,
+        V,
+        label=key + "(PyBaMM)",
+        linestyle=linestyles[i],
+        color=colors[i],
+        marker=markers[i],
+        markevery=markevery,
     )
 ax[1, 0].plot(
     voltage_data_5C["t(s)"],
@@ -184,7 +204,13 @@ for i, key in enumerate(solutions.keys()):
     t = solutions[key][3]["Time [s]"](solutions[key][3].t)
     V = solutions[key][3]["Terminal voltage [V]"](solutions[key][3].t)
     ax[1, 1].plot(
-        t, V, label=key + "(PyBaMM)", linestyle=linestyles[i], color=colors[i]
+        t,
+        V,
+        label=key + "(PyBaMM)",
+        linestyle=linestyles[i],
+        color=colors[i],
+        marker=markers[i],
+        markevery=markevery,
     )
 ax[1, 1].plot(
     voltage_data_7_5C["t(s)"],

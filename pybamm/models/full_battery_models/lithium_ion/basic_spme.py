@@ -218,6 +218,7 @@ class BasicSPMe(BaseModel):
         whole_cell = ["negative electrode", "separator", "positive electrode"]
         self.variables = {
             "Electrolyte concentration": c_e,
+            "Electrolyte concentration [mol.m-3]": c_e * param.c_e_typ,
             "Terminal voltage": V,
             "Terminal voltage [V]": param.U_p_ref
             - param.U_n_ref
