@@ -104,6 +104,7 @@ from .expression_tree.operations.convert_to_casadi import CasadiConverter
 #
 # Model classes
 #
+from .models.options import ModelOptions
 from .models.base_model import BaseModel
 from .models import standard_variables
 from .models.event import Event
