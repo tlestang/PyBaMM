@@ -216,7 +216,7 @@ class ModelOptions:
 
     def info(self):
         print()
-        print_row("Option", "Current value", "Other values")
+        print_row("Option", "Current value", "Possible values")
         print_dash()
         for option_name, option in self._dict_items.items():
             value_str = option.get_values_str()
@@ -234,7 +234,7 @@ class ModelOptions:
         self["side reactions"] = []
         self["interfacial surface area"] = "constant"
         self["current collector"] = "uniform"
-        self["particles"] = "Fickian diffusion"
+        self["particle"] = "Fickian diffusion"
         self["thermal"] = "isothermal"
         self["thermal current collector"] = False
         self["external submodels"] = []
@@ -245,7 +245,7 @@ class ModelOptions:
         self["side reactions"] = []
         self["interfacial surface area"] = "constant"
         self["current collector"] = "uniform"
-        self["particles"] = "Fickian diffusion"
+        self["particle"] = "Fickian diffusion"
         self["thermal"] = "xyz-lumped"
         self["thermal current collector"] = False
         self["external submodels"] = []
@@ -256,7 +256,7 @@ class ModelOptions:
         self["side reactions"] = []
         self["interfacial surface area"] = "constant"
         self["current collector"] = "potential pair"
-        self["particles"] = "Fickian diffusion"
+        self["particle"] = "Fickian diffusion"
         self["thermal"] = "isothermal"
         self["thermal current collector"] = False
         self["external submodels"] = []
@@ -267,7 +267,7 @@ class ModelOptions:
         self["side reactions"] = []
         self["interfacial surface area"] = "constant"
         self["current collector"] = "potential pair"
-        self["particles"] = "Fickian diffusion"
+        self["particle"] = "Fickian diffusion"
         self["thermal"] = "x-lumped"
         self["thermal current collector"] = True
         self["external submodels"] = []
@@ -278,7 +278,7 @@ class ModelOptions:
         self["side reactions"] = []
         self["interfacial surface area"] = "constant"
         self["current collector"] = "potential pair"
-        self["particles"] = "Fickian diffusion"
+        self["particle"] = "Fickian diffusion"
         self["thermal"] = "isothermal"
         self["thermal current collector"] = False
         self["external submodels"] = []
@@ -289,7 +289,7 @@ class ModelOptions:
         self["side reactions"] = []
         self["interfacial surface area"] = "constant"
         self["current collector"] = "potential pair"
-        self["particles"] = "Fickian diffusion"
+        self["particle"] = "Fickian diffusion"
         self["thermal"] = "x-lumped"
         self["thermal current collector"] = True
         self["external submodels"] = []
