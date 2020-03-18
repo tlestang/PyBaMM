@@ -227,7 +227,8 @@ class ModelOptions:
     def list_options(self):
         return list(self._dict_items.keys())
 
-    def default_isothermal_coin_cell(self):
+    # presets
+    def isothermal_coin_cell(self):
         self["dimensionality"] = 0
         self["surface form"] = False
         self["side reactions"] = []
@@ -238,338 +239,58 @@ class ModelOptions:
         self["thermal current collector"] = False
         self["external submodels"] = []
 
-    # def default_thermal_coin_cell(self):
-    #     self.use_0D_current_collectors()
-    #     self.use_standard_form()
-    #     self.use_no_convection()
-    #     self.use_no_side_reactions()
-    #     self.use_constant_surface_area()
-    #     self.use_uniform_current_collector()
-    #     self.use_fickian_diffusion_in_particles()
-    #     self.use_xyz_lumped_thermal_model()
-    #     self.use_no_current_collector_thermal_effects()
-    #     self.use_no_external_submodels()
-
-    # def default_1_plus_1D_isothermal_pouch_cell(self):
-    #     self.use_1D_current_collectors()
-    #     self.use_standard_form()
-    #     self.use_no_convection()
-    #     self.use_no_side_reactions()
-    #     self.use_constant_surface_area()
-    #     self.use_potential_pair_current_collector()
-    #     self.use_fickian_diffusion_in_particles()
-    #     self.use_isothermal_model()
-    #     self.use_no_current_collector_thermal_effects()
-    #     self.use_no_external_submodels()
-
-    # def default_1_plus_1D_thermal_pouch_cell(self):
-    #     self.use_1D_current_collectors()
-    #     self.use_standard_form()
-    #     self.use_no_convection()
-    #     self.use_no_side_reactions()
-    #     self.use_constant_surface_area()
-    #     self.use_potential_pair_current_collector()
-    #     self.use_fickian_diffusion_in_particles()
-    #     self.use_thermal_model()
-    #     self.use_current_collector_thermal_effects()
-    #     self.use_no_external_submodels()
-
-    # def default_2_plus_1D_isothermal_pouch_cell(self):
-    #     self.use_2D_current_collectors()
-    #     self.use_standard_form()
-    #     self.use_no_convection()
-    #     self.use_no_side_reactions()
-    #     self.use_constant_surface_area()
-    #     self.use_potential_pair_current_collector()
-    #     self.use_fickian_diffusion_in_particles()
-    #     self.use_isothermal_model()
-    #     self.use_no_current_collector_thermal_effects()
-    #     self.use_no_external_submodels()
-
-    # def default_2_plus_1D_thermal_pouch_cell(self):
-    #     self.use_2D_current_collectors()
-    #     self.use_standard_form()
-    #     self.use_no_convection()
-    #     self.use_no_side_reactions()
-    #     self.use_constant_surface_area()
-    #     self.use_potential_pair_current_collector()
-    #     self.use_fickian_diffusion_in_particles()
-    #     self.use_thermal_model()
-    #     self.use_current_collector_thermal_effects()
-    #     self.use_no_external_submodels()
-
-    # # options information helpers
-    # def info(self):
-    #     self._print_row("Option", "Current value", "Other values")
-    #     self._print_dash()
-    #     self.current_collector_dimensionality
-    #     self.surface_form
-    #     self.convection
-    #     self.side_reactions
-    #     self.interfacial_surface_area
-    #     self.current_collector_model_type
-    #     self.particle
-    #     self.thermal
-    #     self.current_collector_thermal_effects
-    #     self.external_submodels
-
-    # def _print_row(self, option, value, other_values):
-    #     print("{:<40s}{:<20s}{:<50s}".format(option, value, other_values))
-
-    # def _print_dash(self):
-    #     print("=" * 95)
-
-    # # dimensionality helpers
-    # @property
-    # def current_collector_dimensionality(self):
-    #     self._print_row(
-    #         "Current collector dimensionality",
-    #         str(self._model_options_dict["dimensionality"]),
-    #         "[0, 1, 2]",
-
-    # @current_collector_dimensionality.setter
-    # def current_collector_dimensionality(self, dim):
-    #     if dim not in [0, 1, 2]:
-    #         raise pybamm.ModelError(
-    #             "Current collector dimensionality must be either 0, 1, or, 2."
-    #         )
-    #     self._model_options_dict["dimensionality"] = dim
-
-    # def use_0D_current_collectors(self):
-    #     self._model_options_dict["dimensionality"] = 0
-
-    # def use_1D_current_collectors(self):
-    #     self._model_options_dict["dimensionality"] = 1
-
-    # def use_2D_current_collectors(self):
-    #     self._model_options_dict["dimensionality"] = 2
-
-    # # surface form helpers
-    # @property
-    # def surface_form(self):
-    #     self._print_row(
-    #         "Surface form",
-    #         str(self._model_options_dict["surface form"]),
-    #         "[False, 'differential', 'algebraic']",
-    #     )
-
-    # @surface_form.setter
-    # def surface_form(self, form):
-
-    #     if form not in [False, "differential", "algebraic"]:
-    #         raise pybamm.ModelError(
-    #             "Model form must be either False, 'differential', or 'algebraic'"
-    #         )
-
-    #     self._model_options_dict["surface form"] = form
-
-    # def use_standard_form(self):
-    #     self._model_options_dict["surface form"] = False
-
-    # def use_surface_form_with_capacitance(self):
-    #     self._model_options_dict["surface form"] = "differential"
-
-    # def use_surface_form_without_capacitance(self):
-    #     self._model_options_dict["surface form"] = "algebraic"
-
-    # # convection helpers
-    # @property
-    # def convection(self):
-    #     print(
-    #         "Convection:", self._model_options_dict["convection"],
-    #     )
-    #     self._print_row("Convection", str(self._model_options_dict), "")
-
-    # @convection.setter
-    # def convection(self, conv):
-
-    #     if conv not in [False, True]:
-    #         raise pybamm.ModelError("Convection must be either True or False")
-
-    #     self._model_options_dict["convection"] = conv
-
-    # def use_no_convection(self):
-    #     self._model_options_dict["convection"] = False
-
-    # def use_convection(self):
-    #     self._model_options_dict["convection"] = True
-
-    # # side reaction helpers
-    # @property
-    # def side_reactions(self):
-    #     print(
-    #         "Side reactions:", self._model_options_dict["side reactions"],
-    #     )
-
-    # @side_reactions.setter
-    # def side_reactions(self, reactions):
-    #     self._model_options_dict["side reactions"] = reactions
-
-    # def use_no_side_reactions(self):
-    #     self._model_options_dict["side reactions"] = []
-
-    # # interfacial surface area helpers
-    # @property
-    # def interfacial_surface_area(self):
-    #     print(
-    #         "Interfacial surface area:",
-    #         self._model_options_dict["interfacial surface area"],
-    #     )
-
-    # @interfacial_surface_area.setter
-    # def interfacial_surface_area(self, setting):
-
-    #     if setting == "varying":
-    #         NotImplementedError("Varying interfacial surface area not yet implemented.")
-
-    #     else:
-    #         raise pybamm.ModelError(
-    #             "Interfacial surface area must be either 'constant' or 'varying'."
-    #         )
-
-    #     self._model_options_dict["interfacial surface area"] = setting
-
-    # def use_constant_surface_area(self):
-    #     self._model_options_dict["interfacial surface area"] = "constant"
-
-    # # current collector helpers
-    # @property
-    # def current_collector_model_type(self):
-    #     print(
-    #         "Current collector model type:",
-    #         self._model_options_dict["current collector"],
-    #     )
-
-    # @current_collector_model_type.setter
-    # def current_collector_model_type(self, model_type):
-
-    #     if model_type not in [
-    #         "uniform",
-    #         "potential pair",
-    #         "potential pair quite conductive",
-    #     ]:
-    #         raise pybamm.ModelError(
-    #             "Current collector model type must be either:"
-    #             + "'uniform', 'potential pair', or"
-    #             + "'potential pair quite conductive'"
-    #         )
-
-    #     self._model_options_dict["current collector"] = model_type
-
-    # def use_uniform_current_collector(self):
-    #     self._model_options_dict["current collector"] = "uniform"
-
-    # def use_potential_pair_current_collector(self):
-    #     self._model_options_dict["current collector"] = "potential pair"
-
-    # # particle helpers
-    # @property
-    # def particle(self):
-    #     print(
-    #         "Particle:", self._model_options_dict["particle"],
-    #     )
-
-    # @particle.setter
-    # def particle(self, model_type):
-
-    #     if model_type not in [
-    #         "Fickian diffusion",
-    #         "fast diffusion",
-    #     ]:
-    #         raise pybamm.ModelError(
-    #             "Particle model must be either:"
-    #             + " 'Fickian diffusion', or 'fast diffusion'"
-    #         )
-
-    #     self._model_options_dict["particle"] = model_type
-
-    # def use_fickian_diffusion_in_particles(self):
-    #     self._model_options_dict["particle"] = "Fickian diffusion"
-
-    # def use_fast_diffusion_in_particles(self):
-    #     self._model_options_dict["particle"] = "fast diffusion"
-
-    # # thermal helpers
-    # @property
-    # def thermal(self):
-    #     print(
-    #         "Thermal model:", self._model_options_dict["thermal"],
-    #     )
-
-    # @thermal.setter
-    # def thermal(self, model_type):
-
-    #     if model_type not in [
-    #         "isothermal",
-    #         "x-full",
-    #         "x-lumped",
-    #         "xyz-lumped",
-    #         "lumped",
-    #     ]:
-    #         raise pybamm.ModelError(
-    #             "Thermal model must be either:"
-    #             + "'isothermal'"
-    #             + "'x-full'"
-    #             + "'x-lumped'"
-    #             + "'xyz-lumped'",
-    #             +" or 'lumped'",
-    #         )
-
-    #     self._model_options_dict["thermal"] = model_type
-
-    # def use_isothermal_model(self):
-    #     self._model_options_dict["thermal"] = "isothermal"
-
-    # def use_x_full_thermal_model(self):
-    #     self._model_options_dict["thermal"] = "x-full"
-
-    # def use_x_lumped_thermal_model(self):
-    #     self._model_options_dict["thermal"] = "x-lumped"
-
-    # def use_xyz_lumped_thermal_model(self):
-    #     self._model_options_dict["thermal"] = "xyz-lumped"
-
-    # def use_lumped_thermal_model(self):
-    #     self._model_options_dict["thermal"] = "lumped"
-
-    # # current collector thermal effects helpers
-    # @property
-    # def current_collector_thermal_effects(self):
-    #     print(
-    #         "Current collector thermal effects: ",
-    #         self._model_options_dict["thermal current collector"],
-    #     )
-
-    # @current_collector_thermal_effects.setter
-    # def current_collector_thermal_effects(self, value):
-
-    #     if value not in [
-    #         True,
-    #         False,
-    #     ]:
-    #         raise pybamm.ModelError(
-    #             "Current collector thermal model must be either: True, or False"
-    #         )
-
-    #     self._model_options_dict["thermal current collector"] = value
-
-    # def use_no_current_collector_thermal_effects(self):
-    #     self._model_options_dict["thermal current collector"] = False
-
-    # def use_current_collector_thermal_effects(self):
-    #     self._model_options_dict["thermal current collector"] = True
-
-    # # external_submodel helpers
-    # @property
-    # def external_submodels(self):
-    #     print(
-    #         "External submodels:", self._model_options_dict["external submodels"],
-    #     )
-
-    # @external_submodels.setter
-    # def external_submodels(self, submodels):
-    #     self._model_options_dict["external submodels"] = submodels
-
-    # def use_no_external_submodels(self):
-    #     self._model_options_dict["external submodels"] = []
+    def thermal_coin_cell(self):
+        self["dimensionality"] = 0
+        self["surface form"] = False
+        self["side reactions"] = []
+        self["interfacial surface area"] = "constant"
+        self["current collector"] = "uniform"
+        self["particles"] = "Fickian diffusion"
+        self["thermal"] = "xyz-lumped"
+        self["thermal current collector"] = False
+        self["external submodels"] = []
+
+    def isothermal_pouch_cell_1_plus_1D(self):
+        self["dimensionality"] = 1
+        self["surface form"] = False
+        self["side reactions"] = []
+        self["interfacial surface area"] = "constant"
+        self["current collector"] = "potential pair"
+        self["particles"] = "Fickian diffusion"
+        self["thermal"] = "isothermal"
+        self["thermal current collector"] = False
+        self["external submodels"] = []
+
+    def thermal_pouch_cell_1_plus_1D(self):
+        self["dimensionality"] = 1
+        self["surface form"] = False
+        self["side reactions"] = []
+        self["interfacial surface area"] = "constant"
+        self["current collector"] = "potential pair"
+        self["particles"] = "Fickian diffusion"
+        self["thermal"] = "x-lumped"
+        self["thermal current collector"] = True
+        self["external submodels"] = []
+
+    def isothermal_pouch_cell_2_plus_1D(self):
+        self["dimensionality"] = 2
+        self["surface form"] = False
+        self["side reactions"] = []
+        self["interfacial surface area"] = "constant"
+        self["current collector"] = "potential pair"
+        self["particles"] = "Fickian diffusion"
+        self["thermal"] = "isothermal"
+        self["thermal current collector"] = False
+        self["external submodels"] = []
+
+    def thermal_pouch_cell_2_plus_1D(self):
+        self["dimensionality"] = 2
+        self["surface form"] = False
+        self["side reactions"] = []
+        self["interfacial surface area"] = "constant"
+        self["current collector"] = "potential pair"
+        self["particles"] = "Fickian diffusion"
+        self["thermal"] = "x-lumped"
+        self["thermal current collector"] = True
+        self["external submodels"] = []
 
