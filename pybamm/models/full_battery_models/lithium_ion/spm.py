@@ -10,8 +10,6 @@ class SPM(BaseModel):
 
     Parameters
     ----------
-    options : dict, optional
-        A dictionary of options to be passed to the model.
     name : str, optional
         The name of the model.
     build :  bool, optional
@@ -29,8 +27,12 @@ class SPM(BaseModel):
     **Extends:** :class:`pybamm.lithium_ion.BaseModel`
     """
 
-    def __init__(self, options=None, name="Single Particle Model", build=True):
-        super().__init__(options, name)
+    def __init__(self, name="Single Particle Model", build=True):
+        super().__init__(name, build)
+        pybamm.citations.register("marquis2019asymptotic")
+
+    def reset_model(self):
+        super().reset_model()
 
         self.set_reactions()
         self.set_external_circuit_submodel()
@@ -44,11 +46,6 @@ class SPM(BaseModel):
         self.set_positive_electrode_submodel()
         self.set_thermal_submodel()
         self.set_current_collector_submodel()
-
-        if build:
-            self.build_model()
-
-        pybamm.citations.register("marquis2019asymptotic")
 
     def set_porosity_submodel(self):
 

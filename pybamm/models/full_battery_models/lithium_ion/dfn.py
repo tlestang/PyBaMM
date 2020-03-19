@@ -10,8 +10,6 @@ class DFN(BaseModel):
 
     Parameters
     ----------
-    options : dict, optional
-        A dictionary of options to be passed to the model.
     name : str, optional
         The name of the model.
     build :  bool, optional
@@ -30,8 +28,12 @@ class DFN(BaseModel):
     **Extends:** :class:`pybamm.lithium_ion.BaseModel`
     """
 
-    def __init__(self, options=None, name="Doyle-Fuller-Newman model", build=True):
-        super().__init__(options, name)
+    def __init__(self, name="Doyle-Fuller-Newman model", build=True):
+        super().__init__(name, build)
+        pybamm.citations.register("doyle1993modeling")
+
+    def reset_model(self):
+        super().reset_model()
 
         self.set_external_circuit_submodel()
         self.set_reactions()
@@ -44,13 +46,6 @@ class DFN(BaseModel):
         self.set_electrolyte_submodel()
         self.set_thermal_submodel()
         self.set_current_collector_submodel()
-
-        self.reset_options()
-
-        if build:
-            self.build_model()
-
-        pybamm.citations.register("doyle1993modeling")
 
     def set_porosity_submodel(self):
 

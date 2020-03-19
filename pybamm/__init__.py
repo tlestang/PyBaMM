@@ -101,11 +101,14 @@ from .expression_tree.operations.evaluate import (
 from .expression_tree.operations.jacobian import Jacobian
 from .expression_tree.operations.convert_to_casadi import CasadiConverter
 
+
 #
 # Model classes
 #
-from .models.options import Option
-from .models.options import ModelOptions
+from .models.options.option import Option
+from .models.options.model_options import ModelOptions
+from .models.options import standard_model_options
+
 from .models.base_model import BaseModel
 from .models import standard_variables
 from .models.event import Event

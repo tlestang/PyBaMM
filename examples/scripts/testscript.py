@@ -1,6 +1,10 @@
 import pybamm
 
-options = pybamm.ModelOptions()
-options.info()
+model = pybamm.lithium_ion.SPMe()
 
-options["dimensionality"].info()
+model.options_set(preset="thermal coin cell")
+
+sim = pybamm.Simulation(model)
+
+sim.solve()
+sim.plot()

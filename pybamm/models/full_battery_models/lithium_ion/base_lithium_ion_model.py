@@ -13,126 +13,129 @@ class BaseModel(pybamm.BaseBatteryModel):
 
     """
 
-    def __init__(self, name="Unnamed lithium-ion model"):
-        super().__init__(name)
-        self.param = pybamm.standard_parameters_lithium_ion
+    def __init__(self, name="Unnamed lithium-ion model", build=True):
+        super().__init__(name, build)
 
-        # Default timescale is discharge timescale
+    def reset_model(self):
+        super().reset_model()
+        self.param = pybamm.standard_parameters_lithium_ion
         self.timescale = self.param.tau_discharge
+        # Default timescale is discharge timescale
         self.set_standard_output_variables()
 
     def reset_options(self):
         "Default options for lithium-ion models"
 
-        dimensionality = pybamm.Option("dimensionality", 0, [0, 1, 2])
-
-        current_collector = pybamm.Option(
-            "current collector", "uniform", ["uniform", "potential pair"]
-        )
-
-        particle = pybamm.Option(
-            "particle", "Fickian diffusion", ["Fickian diffusion", "fast diffusion"]
-        )
-
-        thermal = pybamm.Option(
-            "thermal", "isothermal", ["isothermal", "x-full", "x-lumped", "xyz-lumped"]
-        )
-
-        thermal_cc = pybamm.Option("thermal current collector", False, [True, False])
-
-        external_submodels = pybamm.Option("external submodels", [], [])
+        std_opt = pybamm.standard_model_options
 
         self.options = pybamm.ModelOptions(
-            dimensionality,
-            current_collector,
-            particle,
-            thermal,
-            thermal_cc,
-            external_submodels,
+            std_opt.operating_mode,
+            std_opt.dimensionality,
+            std_opt.surface_form,
+            std_opt.current_collector,
+            std_opt.particle,
+            std_opt.thermal,
+            std_opt.thermal_cc,
+            std_opt.external_submodels,
         )
 
         # some presets
         self.options.add_preset(
             "isothermal coin cell",
             {
+                "operating mode": "current",
                 "dimensionality": 0,
+                "surface form": False,
                 "current collector": "uniform",
                 "particle": "Fickian diffusion",
                 "thermal": "isothermal",
                 "thermal current collector": False,
-                "external submodel": [],
+                "external submodels": [],
             },
         )
 
         self.options.add_preset(
             "thermal coin cell",
             {
+                "operating mode": "current",
                 "dimensionality": 0,
+                "surface form": False,
                 "current collector": "uniform",
                 "particle": "Fickian diffusion",
                 "thermal": "x-lumped",
                 "thermal current collector": False,
-                "external submodel": [],
+                "external submodels": [],
             },
         )
 
         self.options.add_preset(
             "1+1D isothermal pouch cell",
             {
+                "operating mode": "current",
                 "dimensionality": 1,
+                "surface form": False,
                 "current collector": "potential pair",
                 "particle": "Fickian diffusion",
                 "thermal": "isothermal",
                 "thermal current collector": False,
-                "external submodel": [],
+                "external submodels": [],
             },
         )
 
         self.options.add_preset(
             "1+1D thermal pouch cell",
             {
+                "operating mode": "current",
                 "dimensionality": 1,
+                "surface form": False,
                 "current collector": "potential pair",
                 "particle": "Fickian diffusion",
                 "thermal": "thermal",
                 "thermal current collector": True,
-                "external submodel": [],
+                "external submodels": [],
             },
         )
 
         self.options.add_preset(
             "2+1D isothermal pouch cell",
             {
+                "operating mode": "current",
                 "dimensionality": 2,
+                "surface form": False,
                 "current collector": "potential pair",
                 "particle": "Fickian diffusion",
                 "thermal": "isothermal",
                 "thermal current collector": False,
-                "external submodel": [],
+                "external submodels": [],
             },
         )
 
         self.options.add_preset(
             "2+1D thermal pouch cell",
             {
+                "operating mode": "current",
                 "dimensionality": 2,
+                "surface form": False,
                 "current collector": "potential pair",
                 "particle": "Fickian diffusion",
                 "thermal": "thermal",
                 "thermal current collector": True,
-                "external submodel": [],
+                "external submodels": [],
             },
         )
 
-    def set_options(
+    def options_set(
         self,
         preset=None,
+        operating_mode=None,
         dimensionality=None,
+        surface_form=None,
         current_collector=None,
         particle=None,
         thermal=None,
         thermal_current_collector=None,
         external_submodels=None,
+        build=True,
     ):
         """
         Function to set model options.
@@ -145,9 +148,15 @@ class BaseModel(pybamm.BaseBatteryModel):
             other option. Can be: 'isothermal coin cell', 'thermal coin cell',
             '1+1D isothermal pouch cell', "1+1D thermal pouch cell',
             '2+1D isothermal pouch cell' , "2+1D thermal pouch cell'.
+        operating_mode: str
+            The operating mode of the system. Can be 'current', 'power', or
+            'voltage'.
         dimensionality : int, optional
             Sets the dimension of the current collector problem. Can be 0
             (default), 1 or 2.
+        surface_form: bool or str
+            Whether to use the surface formulation of the model. Can be:
+            False (bool), 'differential', or 'algebraic'.
         current collector : str, optional
             Sets the current collector model to use. Can be "uniform" (default),
             "potential pair" or "potential pair quite conductive".
@@ -168,6 +177,8 @@ class BaseModel(pybamm.BaseBatteryModel):
                 variable for instead of solving in PyBaMM. The entries of the lists
                 are strings that correspond to the submodel names in the keys
                 of `self.submodels`.
+        build: bool
+            Whether to rebuild the model after setting options.
         """
 
         if preset:
@@ -185,6 +196,9 @@ class BaseModel(pybamm.BaseBatteryModel):
             self.options["thermal current collector"] = thermal_current_collector
         if external_submodels:
             self.options["external submodels"] = external_submodels
+
+        if build:
+            self.build_model()
 
     def set_standard_output_variables(self):
         super().set_standard_output_variables()
