@@ -9,60 +9,18 @@ class BaseBatteryModel(pybamm.BaseModel):
     """
     Base model class with some default settings and required variables
 
-    Attributes
+    Parameters
     ----------
 
-    options: dict
-        A dictionary of options to be passed to the model. The options that can
-        be set are listed below. Note that not all of the options are compatible with
-        each other and with all of the models implemented in PyBaMM.
-
-            * "dimensionality" : int, optional
-                Sets the dimension of the current collector problem. Can be 0
-                (default), 1 or 2.
-            * "surface form" : bool or str, optional
-                Whether to use the surface formulation of the problem. Can be False
-                (default), "differential" or "algebraic". Must be 'False' for
-                lithium-ion models.
-            * "convection" : bool or str, optional
-                Whether to include the effects of convection in the model. Can be
-                False (default), "differential" or "algebraic". Must be 'False' for
-                lithium-ion models.
-            * "side reactions" : list, optional
-                Contains a list of any side reactions to include. Default is []. If this
-                list is not empty (i.e. side reactions are included in the model), then
-                "surface form" cannot be 'False'.
-            * "interfacial surface area" : str, optional
-                Sets the model for the interfacial surface area. Can be "constant"
-                (default) or "varying". Not currently implemented in any of the models.
-            * "current collector" : str, optional
-                Sets the current collector model to use. Can be "uniform" (default),
-                "potential pair" or "potential pair quite conductive".
-            * "particle" : str, optional
-                Sets the submodel to use to describe behaviour within the particle.
-                Can be "Fickian diffusion" (default) or "fast diffusion".
-            * "thermal" : str, optional
-                Sets the thermal model to use. Can be "isothermal" (default),
-                "x-full", "x-lumped", "xyz-lumped" or "lumped".
-            * "thermal current collector" : bool, optional
-                Whether to include thermal effects in the current collector in
-                one-dimensional models (default is False). Note that this option
-                only takes effect if "dimensionality" is 0. If "dimensionality"
-                is 1 or 2 current collector effects are always included. Must be 'False'
-                for lead-acid models.
-            * "external submodels" : list
-                A list of the submodels that you would like to supply an external
-                variable for instead of solving in PyBaMM. The entries of the lists
-                are strings that correspond to the submodel names in the keys
-                of `self.submodels`.
-
-
-    **Extends:** :class:`pybamm.BaseModel`
+    name: str
+        Name of the model.
+    options: :class:`pybamm.ModelOptions`
+        Options for the model.
     """
 
-    def __init__(self, options=None, name="Unnamed battery model"):
+    def __init__(self, name="Unnamed battery model"):
         super().__init__(name)
-        self.options = options
+        self.options = pybamm.ModelOptions()
         self.submodels = {}
         self._built = False
         self._built_fundamental_and_external = False

@@ -18,7 +18,8 @@ class Option:
     A generic option class to make model options cleaner.
     """
 
-    def __init__(self, value, possible_values):
+    def __init__(self, name, value, possible_values):
+        self.name = name
         self.possible_values = possible_values
         self.value = value
 
@@ -35,6 +36,7 @@ class Option:
         value_type = self.get_value_type()
         possible_values_types = self.get_possible_values_types()
 
+        print(self.name)
         print("Current value = " + value_str + " (" + value_type + ")")
         print(
             "Possible values = ["
@@ -140,46 +142,34 @@ class ModelOptions:
         of `self.submodels`.
     """
 
-    def __init__(
-        self,
-        dimensionality=0,
-        surface_form=False,
-        convection=False,
-        side_reactions=None,
-        interfacial_surface_area="constant",
-        current_collector="uniform",
-        particle="Fickian diffusion",
-        thermal="isothermal",
-        thermal_current_collector=False,
-        external_submodels=None,
-    ):
+    def __init__(*options):
 
         self._model_options_dict = {}
 
-        if not side_reactions:
-            side_reactions = []
+        # put into dictionary for easy acesss
+        for opt in options:
+            self._dict_items[opt.name] = opt
 
-        if not external_submodels:
-            external_submodels = []
+        self.presets = {}
 
-        self._dict_items = {
-            "dimensionality": Option(dimensionality, [0, 1, 2]),
-            "surface form": Option(surface_form, [False, "differential", "algebriac"]),
-            "convection": Option(convection, [False, True]),
-            "side reactions": Option(side_reactions, []),
-            "interfacial surface area": Option(interfacial_surface_area, ["constant"]),
-            "current collector": Option(
-                current_collector,
-                ["uniform", "potential pair", "potential pair quite conductive"],
-            ),
-            "particle": Option(particle, ["Fickian diffusion", "fast diffusion"]),
-            "thermal": Option(
-                thermal, ["isothermal", "x-full", "x-lumped", "xyz-lumped", "lumped"]
-            ),
-            "thermal current collector": Option(
-                thermal_current_collector, [False, True]
-            ),
-            "external submodels": Option(external_submodels, []),
+        # self._dict_items = {
+        #     "dimensionality": Option(dimensionality, [0, 1, 2]),
+        #     "surface form": Option(surface_form, [False, "differential", "algebriac"]),
+        #     "convection": Option(convection, [False, True]),
+        #     "side reactions": Option(side_reactions, []),
+        #     "interfacial surface area": Option(interfacial_surface_area, ["constant"]),
+        #     "current collector": Option(
+        #         current_collector,
+        #         ["uniform", "potential pair", "potential pair quite conductive"],
+        #     ),
+        #     "particle": Option(particle, ["Fickian diffusion", "fast diffusion"]),
+        #     "thermal": Option(
+        #         thermal, ["isothermal", "x-full", "x-lumped", "xyz-lumped", "lumped"]
+        #     ),
+        #     "thermal current collector": Option(
+        #         thermal_current_collector, [False, True]
+        #     ),
+        #     "external submodels": Option(external_submodels, []),
         }
 
     def __getitem__(self, key):
@@ -226,6 +216,10 @@ class ModelOptions:
 
     def list_options(self):
         return list(self._dict_items.keys())
+
+    def add_preset(self, name, values_dict):
+        self.presets.update({name: values_dict})
+
 
     # presets
     def isothermal_coin_cell(self):

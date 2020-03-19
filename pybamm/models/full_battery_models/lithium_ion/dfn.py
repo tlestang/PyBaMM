@@ -45,6 +45,8 @@ class DFN(BaseModel):
         self.set_thermal_submodel()
         self.set_current_collector_submodel()
 
+        self.reset_options()
+
         if build:
             self.build_model()
 
