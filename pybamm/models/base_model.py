@@ -102,14 +102,6 @@ class BaseModel(object):
         self.reset_options()
         self.reset_model()
 
-        # Default behaviour is to use the jacobian and simplify
-        self.use_jacobian = True
-        self.use_simplify = True
-        self.convert_to_format = "casadi"
-
-        # Default timescale is 1 second
-        self.timescale = pybamm.Scalar(1)
-
     def reset_options(self):
         self.options = pybamm.ModelOptions()
 
@@ -128,6 +120,14 @@ class BaseModel(object):
         self._jacobian = None
         self._jacobian_algebraic = None
         self.external_variables = []
+
+        # Default behaviour is to use the jacobian and simplify
+        self.use_jacobian = True
+        self.use_simplify = True
+        self.convert_to_format = "casadi"
+
+        # Default timescale is 1 second
+        self.timescale = pybamm.Scalar(1)
 
     def _set_dictionary(self, dict, name):
         """

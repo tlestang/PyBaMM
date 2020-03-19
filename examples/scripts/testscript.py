@@ -1,10 +1,10 @@
 import pybamm
 
-model = pybamm.lithium_ion.SPMe()
+pybamm.set_logging_level("INFO")
+# pybamm.settings.debug_mode = True
 
-model.options_set(preset="thermal coin cell")
-
+model = pybamm.lead_acid.Full()
+# model.options_set(preset="thermal coin cell")
 sim = pybamm.Simulation(model)
-
 sim.solve()
 sim.plot()

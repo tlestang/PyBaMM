@@ -11,8 +11,6 @@ class BaseHigherOrderModel(BaseModel):
 
     Parameters
     ----------
-    options : dict, optional
-        A dictionary of options to be passed to the model.
     name : str, optional
         The name of the model.
     build :  bool, optional
@@ -33,6 +31,10 @@ class BaseHigherOrderModel(BaseModel):
 
     def __init__(self, options=None, name="Composite model", build=True):
         super().__init__(options, name)
+        pybamm.citations.register("sulzer2019asymptotic")
+
+    def reset_model(self):
+        super().reset_model()
 
         self.set_external_circuit_submodel()
         self.set_leading_order_model()
@@ -54,10 +56,13 @@ class BaseHigherOrderModel(BaseModel):
         self.set_thermal_submodel()
         self.set_current_collector_submodel()
 
-        if build:
-            self.build_model()
+    def reset_options(self):
+        super().reset_options()
 
-        pybamm.citations.register("sulzer2019asymptotic")
+        self.options.add_rule(
+            "Surface form is required for side reactions",
+            lambda x: x["surface form"] is False and len(x["side reaction"] > 0),
+        )
 
     def set_current_collector_submodel(self):
         cc = pybamm.current_collector
@@ -78,7 +83,7 @@ class BaseHigherOrderModel(BaseModel):
 
     def set_leading_order_model(self):
         leading_order_model = pybamm.lead_acid.LOQS(
-            self.options, name="LOQS model (for composite model)"
+            name="LOQS model (for composite model)"
         )
         self.update(leading_order_model)
         self.leading_order_reaction_submodels = leading_order_model.reaction_submodels
@@ -183,8 +188,6 @@ class FOQS(BaseHigherOrderModel):
 
     Parameters
     ----------
-    options : dict, optional
-        A dictionary of options to be passed to the model.
     name : str, optional
         The name of the model.
     build :  bool, optional
@@ -196,8 +199,8 @@ class FOQS(BaseHigherOrderModel):
     **Extends:** :class:`pybamm.lead_acid.BaseHigherOrderModel`
     """
 
-    def __init__(self, options=None, name="FOQS model", build=True):
-        super().__init__(options, name, build=build)
+    def __init__(self, name="FOQS model", build=True):
+        super().__init__(name, build=build)
 
     def set_electrolyte_diffusion_submodel(self):
         self.submodels[
@@ -228,8 +231,8 @@ class Composite(BaseHigherOrderModel):
     **Extends:** :class:`pybamm.lead_acid.BaseHigherOrderModel`
     """
 
-    def __init__(self, options=None, name="Composite model", build=True):
-        super().__init__(options, name, build=build)
+    def __init__(self, name="Composite model", build=True):
+        super().__init__(name, build=build)
 
     def set_electrolyte_diffusion_submodel(self):
         self.submodels[
@@ -258,8 +261,6 @@ class CompositeExtended(BaseHigherOrderModel):
 
     Parameters
     ----------
-    options : dict, optional
-        A dictionary of options to be passed to the model.
     name : str, optional
         The name of the model.
     build :  bool, optional
@@ -277,8 +278,8 @@ class CompositeExtended(BaseHigherOrderModel):
     **Extends:** :class:`pybamm.lead_acid.BaseHigherOrderModel`
     """
 
-    def __init__(self, options=None, name="Extended composite model", build=True):
-        super().__init__(options, name, build=build)
+    def __init__(self, name="Extended composite model", build=True):
+        super().__init__(name, build=build)
 
     def set_electrolyte_diffusion_submodel(self):
         self.submodels[

@@ -17,11 +17,41 @@ class BaseModel(pybamm.BaseBatteryModel):
 
     def __init__(self, options=None, name="Unnamed lead-acid model"):
         super().__init__(options, name)
-        self.param = pybamm.standard_parameters_lead_acid
 
+    def reset_model(self):
+        super().reset_model()
+        self.param = pybamm.standard_parameters_lead_acid
         # Default timescale is discharge timescale
         self.timescale = self.param.tau_discharge
         self.set_standard_output_variables()
+
+    def reset_options(self):
+        "Default options for lead acid models"
+
+        std_opt = pybamm.standard_model_options
+
+        current_collector = pybamm.Option(
+            "current collector",
+            "uniform",
+            ["uniform", "potential pair", "potential pair quite conductive"],
+        )
+
+        self.options = pybamm.ModelOptions(
+            std_opt.operating_mode,
+            std_opt.dimensionality,
+            std_opt.surface_form,
+            std_opt.side_reactions,
+            std_opt.convection,
+            current_collector,
+            std_opt.thermal,
+            std_opt.external_submodels,
+        )
+
+        # rules for incompatible options
+        self.options.add_rule(
+            "Only 0D thermal available for lead acid",
+            lambda x: x["thermal"] != "isothermal" and x["dimensionality"] != 0,
+        )
 
     @property
     def default_parameter_values(self):

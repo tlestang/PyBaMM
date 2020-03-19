@@ -14,6 +14,10 @@ surface_form = pybamm.Option(
     "surface form", False, [False, "differential", "algebriac"]
 )
 
+side_reactions = pybamm.Option("side reactions", [], [])
+
+convection = pybamm.Option("convection", False, [False, True])
+
 current_collector = pybamm.Option(
     "current collector", "uniform", ["uniform", "potential pair"]
 )

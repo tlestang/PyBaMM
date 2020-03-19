@@ -106,8 +106,9 @@ class Option:
             self._value = value
         else:
             possible_values_str = self.get_possible_values_str()
-            raise pybamm.ModelError(
+            raise pybamm.OptionError(
                 str(value)
                 + " is an invalid option argument please enter: "
                 + possible_values_str
             )
+

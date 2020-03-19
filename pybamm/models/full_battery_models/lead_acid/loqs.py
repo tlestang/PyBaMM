@@ -10,8 +10,6 @@ class LOQS(BaseModel):
 
     Parameters
     ----------
-    options : dict, optional
-        A dictionary of options to be passed to the model.
     name : str, optional
         The name of the model.
     build :  bool, optional
@@ -30,8 +28,12 @@ class LOQS(BaseModel):
     **Extends:** :class:`pybamm.lead_acid.BaseModel`
     """
 
-    def __init__(self, options=None, name="LOQS model", build=True):
-        super().__init__(options, name)
+    def __init__(self, name="LOQS model", build=True):
+        super().__init__(name, build)
+        pybamm.citations.register("sulzer2019asymptotic")
+
+    def reset_model(self):
+        super().reset_model()
 
         self.set_external_circuit_submodel()
         self.set_reactions()
@@ -46,13 +48,16 @@ class LOQS(BaseModel):
         self.set_side_reaction_submodels()
         self.set_current_collector_submodel()
 
-        if build:
-            self.build_model()
-
         if self.options["dimensionality"] == 0:
             self.use_jacobian = False
 
-        pybamm.citations.register("sulzer2019asymptotic")
+    def reset_options(self):
+        super().reset_options()
+
+        self.options.add_rule(
+            "Surface form is required for side reactions",
+            lambda x: x["surface form"] is False and len(x["side reaction"] > 0),
+        )
 
     def set_external_circuit_submodel(self):
         """

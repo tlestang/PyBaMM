@@ -28,6 +28,7 @@ class ModelOptions:
     def __init__(self, *options):
 
         self._model_options_dict = {}
+        self.rules = {}
 
         # put into dictionary for easy acesss
         self._dict_items = {}
@@ -100,7 +101,7 @@ class ModelOptions:
         option_keys = set(self._dict_items.keys())
 
         if preset_keys != option_keys:
-            raise pybamm.ModelError(
+            raise pybamm.OptionError(
                 "Preset keys ({}) must match all of the option keys ({}).".format(
                     preset_keys, option_keys
                 )
@@ -112,6 +113,22 @@ class ModelOptions:
         preset_dict = self.presets[name]
         for key, val in preset_dict.items():
             self[key] = val
+
+    def add_rule(self, name, rule):
+        """
+        Method to add rules to prevent inconsistent options.
+
+        Parameters
+        ----------
+        name: str
+            The name of the rule. Will be reported in case of
+            rule failure.
+        rule: method
+            A function that takes a dictionary of model options
+            as an input and returns True or False. When the rule
+            is violated, return True.
+        """
+        self.rules[name] = rule
 
 
 """
