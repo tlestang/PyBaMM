@@ -1,5 +1,5 @@
 #
-# Test some option class
+# Test option class
 #
 import pybamm
 import unittest
@@ -36,7 +36,6 @@ class TestOption(unittest.TestCase):
         with self.assertRaises(pybamm.OptionError):
             option = pybamm.Option(name, "d", possible_values)
             option = pybamm.Option(name, 5, possible_values)
-
 
     def test_has(self):
 

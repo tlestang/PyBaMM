@@ -32,7 +32,7 @@ class ModelOptions:
         self.rules = {}
 
         # put into dictionary for easy acesss
-        self._dict_items = {}
+        self._dict_items = pybamm.FuzzyDict()
         for opt in options:
             self._dict_items[opt.name] = copy.deepcopy(opt)
 
@@ -118,6 +118,10 @@ class ModelOptions:
                     preset_keys, option_keys
                 )
             )
+
+        for option_name, option, in self._dict_items.items():
+            if not option.has(values_dict[option_name]):
+                raise pybamm.OptionError("Preset value: '" + str(values_dict[option_name]) + "' for option: " + option_name " is incompatible with the options")
 
         self.presets.update({name: values_dict})
 
