@@ -34,7 +34,7 @@ class BasicSPMe(BaseModel):
         self,
         name="Single Particle Model with electrolyte",
         linear_diffusion=True,
-        wrong_av=False,
+        wrong_j0=False,
     ):
         super().__init__({}, name)
         # `param` is a class containing all the relevant parameters and functions for
@@ -168,19 +168,17 @@ class BasicSPMe(BaseModel):
         U_p = param.U_p(c_s_surf_p, T)
         ocv = U_p - U_n
 
-        if wrong_av:
-            # j0(av) rather than av(j0)
+        if wrong_j0:
+            # j0(av) rather than av(j0) and sqrt in wrong order
             j0_n = (
-                (param.m_n(T) / param.C_r_n)
-                * c_s_surf_n ** (1 / 2)
-                * (1 - c_s_surf_n) ** (1 / 2)
-                * (pybamm.x_average(c_e_n)) ** (1 / 2)
+                param.l_n
+                * (param.m_n(T) / param.C_r_n)
+                * (c_s_surf_n * (1 - c_s_surf_n) * (pybamm.x_average(c_e_n))) ** (1 / 2)
             )
             j0_p = (
-                (param.gamma_p * param.m_p(T) / param.C_r_p)
-                * c_s_surf_p ** (1 / 2)
-                * (1 - c_s_surf_p) ** (1 / 2)
-                * (pybamm.x_average(c_e_p)) ** (1 / 2)
+                param.l_p
+                * (param.gamma_p * param.m_p(T) / param.C_r_p)
+                * (c_s_surf_p * (1 - c_s_surf_p) * (pybamm.x_average(c_e_p))) ** (1 / 2)
             )
         else:
             j0_n = pybamm.x_average(
