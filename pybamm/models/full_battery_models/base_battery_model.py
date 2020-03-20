@@ -346,7 +346,11 @@ class BaseBatteryModel(pybamm.BaseModel):
             pybamm.logger.info("Resetting {}".format(self.name))
             self.reset_model()
 
+        # check options are consistent
+
         pybamm.logger.info("Building {}".format(self.name))
+
+        self.options.check_rules()
 
         if self._built_fundamental_and_external is False:
             self.build_fundamental_and_external()

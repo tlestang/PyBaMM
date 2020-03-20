@@ -3,6 +3,7 @@
 #
 
 import pybamm
+import copy
 
 
 def print_row(option, value, other_values):
@@ -33,7 +34,7 @@ class ModelOptions:
         # put into dictionary for easy acesss
         self._dict_items = {}
         for opt in options:
-            self._dict_items[opt.name] = opt
+            self._dict_items[opt.name] = copy.deepcopy(opt)
 
         self.presets = {}
 
@@ -69,12 +70,14 @@ class ModelOptions:
     def _ipython_key_completions_(self):
         return list(self._dict_items.keys())
 
-    def info(self, presets=True):
+    def info(self, presets=True, rules=True):
         """
         Parameters
         ----------
         presets: bool (optional)
             Whether to print presets (default is True)
+        rules: bool (optional)
+            Whether to print rules (default is True)
         """
 
         print()
@@ -87,11 +90,20 @@ class ModelOptions:
         print()
 
         if presets:
-            print("Presets")
-            print("=" * 30)
-            for preset in self.presets.keys():
-                print(preset)
-            print()
+            if len(self.presets) > 0:
+                print("Presets")
+                print_dash()
+                for preset in self.presets.keys():
+                    print(preset)
+                print()
+
+        if rules:
+            if len(self.rules) > 0:
+                print("Rules")
+                print_dash()
+                for rule in self.rules.keys():
+                    print(rule)
+                print()
 
     def list_options(self):
         return list(self._dict_items.keys())
@@ -129,6 +141,20 @@ class ModelOptions:
             is violated, return True.
         """
         self.rules[name] = rule
+
+    def check_rules(self):
+        """
+        Method to check whether the current set of rules are satisfied by
+        the current set of options.
+        """
+
+        pybamm.logger.info("Checking model options are consistent.")
+
+        for name, rule in self.rules.items():
+            if rule(self):
+                raise pybamm.OptionError(
+                    "The current options are incompatible according to: '" + name + "'"
+                )
 
 
 """

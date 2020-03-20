@@ -49,7 +49,7 @@ class BaseModel(pybamm.BaseBatteryModel):
 
         # rules for incompatible options
         self.options.add_rule(
-            "Only 0D thermal available for lead acid",
+            "Thermal models only available for dimensionality = 0",
             lambda x: x["thermal"] != "isothermal" and x["dimensionality"] != 0,
         )
 
