@@ -53,6 +53,98 @@ class BaseModel(pybamm.BaseBatteryModel):
             lambda x: x["thermal"] != "isothermal" and x["dimensionality"] != 0,
         )
 
+        self.options.add_preset(
+            "1D isothermal cell",
+            {
+                "opterating mode": "current",
+                "dimensionality": 0,
+                "surface form": False,
+                "side reactions": [],
+                "convection": False,
+                "current collector": "uniform",
+                "thermal": False,
+                "external submodels": [],
+            },
+        )
+
+        self.options.add_preset(
+            "1D thermal cell",
+            {
+                "opterating mode": "current",
+                "dimensionality": 0,
+                "surface form": False,
+                "side reactions": [],
+                "convection": False,
+                "current collector": "uniform",
+                "thermal": True,
+                "external submodels": [],
+            },
+        )
+
+    def options_set(
+        self,
+        preset=None,
+        operating_mode=None,
+        dimensionality=None,
+        surface_form=None,
+        side_reactions=None,
+        current_collector=None,
+        thermal=None,
+        external_submodels=None,
+        build=True,
+    ):
+        """
+        Function to set model options.
+
+        Parameters
+        ----------
+        preset: str, optional
+            Name of the preset options to use. If you enter another option,
+            the value in the preset will be overwritten with the value of the
+            other option. Can be: '1D isothermal cell', '1D thermal cell',
+        operating_mode: str, optional
+            The operating mode of the system. Can be 'current', 'power', or
+            'voltage'.
+        dimensionality : int, optional
+            Sets the dimension of the current collector problem. Can be 0
+            (default), 1 or 2.
+        surface_form: bool or str
+            Whether to use the surface formulation of the model. Can be:
+            False (bool), 'differential', or 'algebraic'.
+        side_reactions: list, optional
+            List of the side reactions (str) to activate.
+        current collector : str, optional
+            Sets the current collector model to use. Can be "uniform" (default),
+            "potential pair" or "potential pair quite conductive".
+        thermal : str, optional
+            Sets the thermal model to use. Can be "isothermal" (default),
+            "x-full", "x-lumped", "xyz-lumped" or "lumped".
+        external submodels : list
+            A list of the submodels that you would like to supply an external
+                variable for instead of solving in PyBaMM. The entries of the lists
+                are strings that correspond to the submodel names in the keys
+                of `self.submodels`.
+        build: bool
+            Whether to rebuild the model after setting options.
+        """
+
+        if preset:
+            self.options.load_preset(preset)
+
+        if dimensionality:
+            self.options["dimensionality"] = dimensionality
+        if current_collector:
+            self.options["current collector"] = current_collector
+        if side_reactions:
+            self.options["side reactions"] = side_reactions
+        if thermal:
+            self.options["thermal"] = thermal
+        if external_submodels:
+            self.options["external submodels"] = external_submodels
+
+        if build:
+            self.build_model()
+
     @property
     def default_parameter_values(self):
         return pybamm.ParameterValues(chemistry=pybamm.parameter_sets.Sulzer2019)

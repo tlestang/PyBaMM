@@ -9,8 +9,8 @@ pybamm.set_logging_level("DEBUG")
 
 
 # load model
-options = {"thermal": "x-lumped"}
-model = pybamm.lithium_ion.DFN(options)
+model = pybamm.lithium_ion.DFN()
+model.options_set(thermal="x-lumped")
 
 # create geometry
 geometry = model.default_geometry
