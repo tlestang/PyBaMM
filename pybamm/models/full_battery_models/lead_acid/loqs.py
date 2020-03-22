@@ -12,11 +12,6 @@ class LOQS(BaseModel):
     ----------
     name : str, optional
         The name of the model.
-    build :  bool, optional
-        Whether to build the model on instantiation. Default is True. Setting this
-        option to False allows users to change any number of the submodels before
-        building the complete model (submodels cannot be changed after the model is
-        built).
 
     References
     ----------
@@ -28,8 +23,8 @@ class LOQS(BaseModel):
     **Extends:** :class:`pybamm.lead_acid.BaseModel`
     """
 
-    def __init__(self, name="LOQS model", build=True):
-        super().__init__(name, build)
+    def __init__(self, name="LOQS model"):
+        super().__init__(name)
         pybamm.citations.register("sulzer2019asymptotic")
 
     def reset_model(self):

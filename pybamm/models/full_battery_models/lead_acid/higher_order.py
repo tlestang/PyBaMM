@@ -13,11 +13,6 @@ class BaseHigherOrderModel(BaseModel):
     ----------
     name : str, optional
         The name of the model.
-    build :  bool, optional
-        Whether to build the model on instantiation. Default is True. Setting this
-        option to False allows users to change any number of the submodels before
-        building the complete model (submodels cannot be changed after the model is
-        built).
 
     References
     ----------
@@ -29,8 +24,8 @@ class BaseHigherOrderModel(BaseModel):
     **Extends:** :class:`pybamm.lead_acid.BaseModel`
     """
 
-    def __init__(self, options=None, name="Composite model", build=True):
-        super().__init__(options, name)
+    def __init__(self, options=None, name="Composite model"):
+        super().__init__(options)
         pybamm.citations.register("sulzer2019asymptotic")
 
     def reset_model(self):

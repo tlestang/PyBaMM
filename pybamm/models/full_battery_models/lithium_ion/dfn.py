@@ -12,11 +12,6 @@ class DFN(BaseModel):
     ----------
     name : str, optional
         The name of the model.
-    build :  bool, optional
-        Whether to build the model on instantiation. Default is True. Setting this
-        option to False allows users to change any number of the submodels before
-        building the complete model (submodels cannot be changed after the model is
-        built).
 
     References
     ----------
@@ -28,8 +23,8 @@ class DFN(BaseModel):
     **Extends:** :class:`pybamm.lithium_ion.BaseModel`
     """
 
-    def __init__(self, name="Doyle-Fuller-Newman model", build=True):
-        super().__init__(name, build)
+    def __init__(self, name="Doyle-Fuller-Newman model"):
+        super().__init__(name)
         pybamm.citations.register("doyle1993modeling")
 
     def reset_model(self):

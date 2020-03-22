@@ -18,11 +18,8 @@ class BaseBatteryModel(pybamm.BaseModel):
         Options for the model.
     """
 
-    def __init__(self, name="Unnamed battery model", build=True):
+    def __init__(self, name="Unnamed battery model"):
         super().__init__(name)
-
-        if build:
-            self.build_model()
 
     def reset_model(self):
         super().reset_model()

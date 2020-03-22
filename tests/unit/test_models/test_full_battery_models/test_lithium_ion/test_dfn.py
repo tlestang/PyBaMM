@@ -7,22 +7,22 @@ import unittest
 
 class TestDFN(unittest.TestCase):
     def test_well_posed(self):
-        options = {"thermal": "isothermal"}
-        model = pybamm.lithium_ion.DFN(options)
+        model = pybamm.lithium_ion.DFN(build=False)
+        model.options_set(thermal="isothermal")
         model.check_well_posedness()
 
     def test_default_geometry(self):
-        options = {"thermal": "isothermal"}
-        model = pybamm.lithium_ion.DFN(options)
+        model = pybamm.lithium_ion.DFN(build=False)
+        model.options_set(thermal="isothermal")
         self.assertIsInstance(model.default_geometry, pybamm.Geometry)
         self.assertTrue("secondary" in model.default_geometry["negative particle"])
 
-        options = {"current collector": "potential pair", "dimensionality": 1}
-        model = pybamm.lithium_ion.DFN(options)
+        model = pybamm.lithium_ion.DFN(build=False)
+        model.options_set("1+1D isothermal pouch cell")
         self.assertIn("current collector", model.default_geometry)
 
-        options = {"current collector": "potential pair", "dimensionality": 2}
-        model = pybamm.lithium_ion.DFN(options)
+        model = pybamm.lithium_ion.DFN(build=False)
+        model.options_set("2+1D isothermal pouch cell")
         self.assertIn("current collector", model.default_geometry)
 
     def test_well_posed_2plus1D(self):
