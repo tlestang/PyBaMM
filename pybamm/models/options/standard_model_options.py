@@ -27,10 +27,11 @@ particle = pybamm.Option(
 )
 
 thermal = pybamm.Option(
-    "thermal", "isothermal", ["isothermal", "x-full", "x-lumped", "xyz-lumped"]
+    "thermal",
+    "isothermal",
+    ["isothermal", "x-full", "x-lumped", "xyz-lumped", "lumped"],
 )
 
 thermal_cc = pybamm.Option("thermal current collector", False, [True, False])
 
 external_submodels = pybamm.Option("external submodels", [], [])
-

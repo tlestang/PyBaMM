@@ -44,6 +44,7 @@ class ModelOptions:
     def __setitem__(self, key, value):
         "Update the value in the option."
         self._dict_items[key].value = value
+        self.check_rules(warn=True)
 
     def __delitem__(self, key):
         del self._dict_items[key]
@@ -124,10 +125,12 @@ class ModelOptions:
                 raise pybamm.OptionError(
                     "Preset value: '"
                     + str(values_dict[option_name])
-                    + "' for option: "
+                    + "' for "
                     + option_name
                     + " is incompatible with the options"
                 )
+
+        self.check_rules()
 
         self.presets.update({name: values_dict})
 
@@ -158,6 +161,8 @@ class ModelOptions:
 
         if not callable(rule):
             raise pybamm.OptionError("The rule must be a callable function.")
+
+        self.check_rules(warn=True)
 
         self.rules[name] = rule
 

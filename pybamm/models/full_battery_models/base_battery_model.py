@@ -566,3 +566,7 @@ class BaseBatteryModel(pybamm.BaseModel):
         disc_symbol = disc.process_symbol(param_symbol)
 
         return disc_symbol
+
+    def check_well_posedness(self, post_discretisation=False):
+        self.build_model()
+        super().check_well_posedness(post_discretisation=post_discretisation)

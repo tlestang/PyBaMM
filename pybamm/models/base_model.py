@@ -99,6 +99,8 @@ class BaseModel(object):
     def __init__(self, name="Unnamed model"):
         self.name = name
 
+        self._built = None
+
         self.reset_options()
         self.reset_model()
 
@@ -386,6 +388,7 @@ class BaseModel(object):
         post_discretisation : boolean
             A flag indicating tests to be skipped after discretisation
         """
+
         self.check_well_determined(post_discretisation)
         self.check_algebraic_equations(post_discretisation)
         self.check_ics_bcs()

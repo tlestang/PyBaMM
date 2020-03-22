@@ -39,6 +39,17 @@ class BaseModel(pybamm.BaseBatteryModel):
             std_opt.external_submodels,
         )
 
+        self.options.add_rule(
+            "Thermal current collectors not implemented for x-full",
+            lambda x: x["thermal"] == "x-full"
+            and x["thermal current collector"] is True,
+        )
+
+        self.options.add_rule(
+            "X-full only available for dimensionality=0",
+            lambda x: x["thermal"] == "x-full" and x["dimensionality"] != 0,
+        )
+
         # some presets
         self.options.add_preset(
             "isothermal coin cell",
@@ -90,7 +101,7 @@ class BaseModel(pybamm.BaseBatteryModel):
                 "surface form": False,
                 "current collector": "potential pair",
                 "particle": "Fickian diffusion",
-                "thermal": "thermal",
+                "thermal": "x-lumped",
                 "thermal current collector": True,
                 "external submodels": [],
             },
@@ -118,15 +129,10 @@ class BaseModel(pybamm.BaseBatteryModel):
                 "surface form": False,
                 "current collector": "potential pair",
                 "particle": "Fickian diffusion",
-                "thermal": "thermal",
+                "thermal": "x-lumped",
                 "thermal current collector": True,
                 "external submodels": [],
             },
-        )
-        self.options.add_rule(
-            "Thermal current collectors not implemented for x-full",
-            lambda x: x["thermal"] == "x-full"
-            and x["thermal current collector"] is True,
         )
 
     def options_set(
@@ -201,9 +207,6 @@ class BaseModel(pybamm.BaseBatteryModel):
             self.options["thermal current collector"] = thermal_current_collector
         if external_submodels:
             self.options["external submodels"] = external_submodels
-
-        if build:
-            self.build_model()
 
     def set_standard_output_variables(self):
         super().set_standard_output_variables()
