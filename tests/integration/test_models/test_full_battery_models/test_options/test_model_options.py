@@ -69,6 +69,27 @@ class TestOption(unittest.TestCase):
             options.add_preset("preset 2", {"option 1": "d", "option 2": []})
             options.load_preset()
 
+    def test_rules(self):
+
+        options = model_options_for_testing()
+
+        name = "test_rule"
+
+        def rule(x):
+            return x["option 1"] == "a"
+
+        with self.assertRaises(pybamm.OptionError):
+            options.add_rule(1, rule)
+
+        with self.assertRaises(pybamm.OptionError):
+            options.add_rule(name, "not a function")
+
+        options.add_rule(name, rule)
+        self.assertEqual(options.rules[name], rule)
+
+        with self.assertRaises(pybamm.OptionError):
+            options.check_rules()
+
 
 if __name__ == "__main__":
     print("Add -v for more debug output")

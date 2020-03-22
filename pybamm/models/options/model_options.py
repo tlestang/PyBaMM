@@ -121,7 +121,13 @@ class ModelOptions:
 
         for option_name, option, in self._dict_items.items():
             if not option.has(values_dict[option_name]):
-                raise pybamm.OptionError("Preset value: '" + str(values_dict[option_name]) + "' for option: " + option_name " is incompatible with the options")
+                raise pybamm.OptionError(
+                    "Preset value: '"
+                    + str(values_dict[option_name])
+                    + "' for option: "
+                    + option_name
+                    + " is incompatible with the options"
+                )
 
         self.presets.update({name: values_dict})
 
@@ -132,7 +138,9 @@ class ModelOptions:
 
     def add_rule(self, name, rule):
         """
-        Method to add rules to prevent inconsistent options.
+        Method to add rules (constraints that cannot be violated)
+        to prevent inconsistent options. A rule returns True when
+        the options are inconsistent.
 
         Parameters
         ----------
@@ -144,6 +152,13 @@ class ModelOptions:
             as an input and returns True or False. When the rule
             is violated, return True.
         """
+
+        if not isinstance(name, str):
+            raise pybamm.OptionError("The name of the rule must be a str.")
+
+        if not callable(rule):
+            raise pybamm.OptionError("The rule must be a callable function.")
+
         self.rules[name] = rule
 
     def check_rules(self):
@@ -159,46 +174,3 @@ class ModelOptions:
                 raise pybamm.OptionError(
                     "The current options are incompatible according to: '" + name + "'"
                 )
-
-
-"""
- Attributes
-    ----------
-    dimensionality : int, optional
-        Sets the dimension of the current collector problem. Can be 0
-        (default), 1 or 2.
-    surface form : bool or str, optional
-        Whether to use the surface formulation of the problem. Can be False
-        (default), "differential" or "algebraic". Must be 'False' for
-        lithium-ion models.
-    convection : bool or str, optional
-        Whether to include the effects of convection in the model. Can be
-        False (default) or True. Must be 'False' for lithium-ion models.
-    side reactions : list, optional
-        Contains a list of any side reactions to include. Default is []. If this
-        list is not empty (i.e. side reactions are included in the model), then
-        "surface form" cannot be 'False'.
-    interfacial surface area : str, optional
-        Sets the model for the interfacial surface area. Can be "constant"
-        (default) or "varying". Not currently implemented in any of the models.
-    current collector : str, optional
-        Sets the current collector model to use. Can be "uniform" (default),
-        "potential pair" or "potential pair quite conductive".
-    particle : str, optional
-        Sets the submodel to use to describe behaviour within the particle.
-        Can be "Fickian diffusion" (default) or "fast diffusion".
-    thermal : str, optional
-        Sets the thermal model to use. Can be "isothermal" (default),
-        "x-full", "x-lumped", "xyz-lumped" or "lumped".
-    thermal current collector : bool, optional
-        Whether to include thermal effects in the current collector in
-        one-dimensional models (default is False). Note that this option
-        only takes effect if "dimensionality" is 0. If "dimensionality"
-        is 1 or 2 current collector effects are always included. Must be 'False'
-        for lead-acid models.
-    external submodels : list
-        A list of the submodels that you would like to supply an external
-        variable for instead of solving in PyBaMM. The entries of the lists
-        are strings that correspond to the submodel names in the keys
-        of `self.submodels`.
-"""
