@@ -52,6 +52,9 @@ class TestOption(unittest.TestCase):
         self.assertEqual(list_option.has(["some", "things"]), True)
         self.assertEqual(list_option.has("just one"), False)
 
+        function_option = pybamm.Option("a", "a", ["a", "b", "FUNCTION"])
+        self.assertTrue(function_option.has(lambda x: x + 1))
+
     def test_info(self):
         option = option_for_testing()
         option.info()
