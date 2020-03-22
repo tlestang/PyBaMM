@@ -105,7 +105,7 @@ from .expression_tree.operations.convert_to_casadi import CasadiConverter
 #
 # Model classes
 #
-from .models.options.option import Option
+from .models.options.option import Option, ListOption
 from .models.options.model_options import ModelOptions
 from .models.options import standard_model_options
 

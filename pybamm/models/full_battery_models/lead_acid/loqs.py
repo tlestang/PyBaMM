@@ -49,10 +49,10 @@ class LOQS(BaseModel):
     def reset_options(self):
         super().reset_options()
 
-        self.options.add_rule(
-            "Surface form is required for side reactions",
-            lambda x: x["surface form"] is False and len(x["side reaction"] > 0),
-        )
+        # self.options.add_rule(
+        #     "Surface form is required for side reactions",
+        #     lambda x: x["surface form"] is False and len(x["side reactions"]) > 0,
+        # )
 
     def set_external_circuit_submodel(self):
         """

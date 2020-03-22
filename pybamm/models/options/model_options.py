@@ -113,11 +113,17 @@ class ModelOptions:
         preset_keys = set(values_dict.keys())
         option_keys = set(self._dict_items.keys())
 
-        if preset_keys != option_keys:
+        missing = option_keys.difference(preset_keys)
+        additional = preset_keys.difference(preset_keys)
+
+        if len(missing) > 0:
             raise pybamm.OptionError(
-                "Preset keys ({}) must match all of the option keys ({}).".format(
-                    preset_keys, option_keys
-                )
+                "There are missing options in the preset ({}).".format(missing,)
+            )
+
+        if len(additional) > 0:
+            raise pybamm.OptionError(
+                "There are unneeded options in the preset ({}).".format(additional,)
             )
 
         for option_name, option, in self._dict_items.items():

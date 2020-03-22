@@ -24,10 +24,10 @@ class Option:
         self.value = value
 
     def has(self, value):
-        if self.possible_values == []:
-            return isinstance(value, list)
-        elif callable(value) and "FUNCTION" in self.possible_values:
+
+        if callable(value) and "FUNCTION" in self.possible_values:
             return True
+
         else:
             return value in self.possible_values
 
@@ -95,3 +95,20 @@ class Option:
                 + possible_values_str
             )
 
+
+class ListOption(Option):
+    """
+    An option class for options that are lists
+
+    Parameters
+    -----------
+    name : str
+        The name of the option
+    value:
+        The current value of the option
+    possible values: list
+        List of possible option values
+    """
+
+    def has(self, value):
+        return all(val in self.possible_values for val in value)

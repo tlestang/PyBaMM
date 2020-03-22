@@ -15,8 +15,8 @@ class BaseModel(pybamm.BaseBatteryModel):
 
     """
 
-    def __init__(self, options=None, name="Unnamed lead-acid model"):
-        super().__init__(options, name)
+    def __init__(self, name="Unnamed lead-acid model"):
+        super().__init__(name)
 
     def reset_model(self):
         super().reset_model()
@@ -44,6 +44,7 @@ class BaseModel(pybamm.BaseBatteryModel):
             std_opt.convection,
             current_collector,
             std_opt.thermal,
+            std_opt.interfacial_surface_area,
             std_opt.external_submodels,
         )
 
@@ -56,13 +57,14 @@ class BaseModel(pybamm.BaseBatteryModel):
         self.options.add_preset(
             "1D isothermal cell",
             {
-                "opterating mode": "current",
+                "operating mode": "current",
                 "dimensionality": 0,
                 "surface form": False,
                 "side reactions": [],
                 "convection": False,
                 "current collector": "uniform",
-                "thermal": False,
+                "thermal": "isothermal",
+                "interfacial surface area": "constant",
                 "external submodels": [],
             },
         )
@@ -70,13 +72,14 @@ class BaseModel(pybamm.BaseBatteryModel):
         self.options.add_preset(
             "1D thermal cell",
             {
-                "opterating mode": "current",
+                "operating mode": "current",
                 "dimensionality": 0,
                 "surface form": False,
                 "side reactions": [],
                 "convection": False,
                 "current collector": "uniform",
-                "thermal": True,
+                "thermal": "x-full",
+                "interfacial surface area": "constant",
                 "external submodels": [],
             },
         )
@@ -89,7 +92,9 @@ class BaseModel(pybamm.BaseBatteryModel):
         surface_form=None,
         side_reactions=None,
         current_collector=None,
+        convection=None,
         thermal=None,
+        interfacial_surface_area=None,
         external_submodels=None,
         build=True,
     ):
@@ -116,9 +121,14 @@ class BaseModel(pybamm.BaseBatteryModel):
         current collector : str, optional
             Sets the current collector model to use. Can be "uniform" (default),
             "potential pair" or "potential pair quite conductive".
+        convection: str: optional
+            Whether to use convection in the model. Can be True or False.
         thermal : str, optional
             Sets the thermal model to use. Can be "isothermal" (default),
             "x-full", "x-lumped", "xyz-lumped" or "lumped".
+        interfacial_surface_area str optional
+            Whether to model the increasing/descreasing interfacial
+            surface area through time. Can be "constant" or "varying".
         external submodels : list
             A list of the submodels that you would like to supply an external
                 variable for instead of solving in PyBaMM. The entries of the lists
@@ -135,10 +145,14 @@ class BaseModel(pybamm.BaseBatteryModel):
             self.options["dimensionality"] = dimensionality
         if current_collector:
             self.options["current collector"] = current_collector
+        if convection:
+            self.options["convection"] = convection
         if side_reactions:
             self.options["side reactions"] = side_reactions
         if thermal:
             self.options["thermal"] = thermal
+        if interfacial_surface_area:
+            self.options["interfacial surface area"] = interfacial_surface_area
         if external_submodels:
             self.options["external submodels"] = external_submodels
 
