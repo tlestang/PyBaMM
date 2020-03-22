@@ -161,7 +161,7 @@ class ModelOptions:
 
         self.rules[name] = rule
 
-    def check_rules(self):
+    def check_rules(self, warn=False):
         """
         Method to check whether the current set of rules are satisfied by
         the current set of options.
@@ -171,6 +171,10 @@ class ModelOptions:
 
         for name, rule in self.rules.items():
             if rule(self):
-                raise pybamm.OptionError(
+                message = (
                     "The current options are incompatible according to: '" + name + "'"
                 )
+                if warn:
+                    raise pybamm.OptionWarning(message)
+                else:
+                    raise pybamm.OptionError(message)

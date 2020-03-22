@@ -123,6 +123,11 @@ class BaseModel(pybamm.BaseBatteryModel):
                 "external submodels": [],
             },
         )
+        self.options.add_rule(
+            "Thermal current collectors not implemented for x-full",
+            lambda x: x["thermal"] == "x-full"
+            and x["thermal current collector"] is True,
+        )
 
     def options_set(
         self,

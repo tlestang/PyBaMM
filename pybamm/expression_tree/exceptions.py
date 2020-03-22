@@ -10,9 +10,13 @@ class DomainError(Exception):
 
 
 class OptionError(Exception):
-    """Option error: an unknown option was given"""
+    """Option error: the options are not consistent"""
 
     pass
+
+
+class OptionWarning(UserWarning):
+    """Option warning: the options are not consistent. Please change them"""
 
 
 class GeometryError(Exception):

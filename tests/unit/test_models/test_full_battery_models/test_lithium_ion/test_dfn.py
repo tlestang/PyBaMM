@@ -7,46 +7,43 @@ import unittest
 
 class TestDFN(unittest.TestCase):
     def test_well_posed(self):
-        model = pybamm.lithium_ion.DFN(build=False)
-        model.options_set(thermal="isothermal")
+        model = pybamm.lithium_ion.DFN()
         model.check_well_posedness()
 
     def test_default_geometry(self):
-        model = pybamm.lithium_ion.DFN(build=False)
-        model.options_set(thermal="isothermal")
+        model = pybamm.lithium_ion.DFN()
         self.assertIsInstance(model.default_geometry, pybamm.Geometry)
         self.assertTrue("secondary" in model.default_geometry["negative particle"])
 
-        model = pybamm.lithium_ion.DFN(build=False)
+        model = pybamm.lithium_ion.DFN()
         model.options_set("1+1D isothermal pouch cell")
         self.assertIn("current collector", model.default_geometry)
 
-        model = pybamm.lithium_ion.DFN(build=False)
+        model = pybamm.lithium_ion.DFN()
         model.options_set("2+1D isothermal pouch cell")
         self.assertIn("current collector", model.default_geometry)
 
-    def test_well_posed_2plus1D(self):
-        options = {"current collector": "potential pair", "dimensionality": 1}
-        model = pybamm.lithium_ion.DFN(options)
+    def test_well_posed_x_plus1D(self):
+        model = pybamm.lithium_ion.DFN()
+        model.options_set("1+1D isothermal pouch cell")
         model.check_well_posedness()
 
-        options = {"current collector": "potential pair", "dimensionality": 2}
-        model = pybamm.lithium_ion.DFN(options)
+        model = pybamm.lithium_ion.DFN()
+        model.options_set("2+1D isothermal pouch cell")
         model.check_well_posedness()
-
-        options = {"bc_options": {"dimensionality": 5}}
-        with self.assertRaises(pybamm.OptionError):
-            model = pybamm.lithium_ion.DFN(options)
 
     def test_x_full_thermal_model_no_current_collector(self):
-        options = {"thermal": "x-full"}
-        model = pybamm.lithium_ion.DFN(options)
+        model = pybamm.lithium_ion.DFN()
+        model.options_set(thermal="x-full")
         model.check_well_posedness()
 
         # Not implemented with current collectors
         options = {"thermal": "x-full", "thermal current collector": True}
-        with self.assertRaises(NotImplementedError):
-            model = pybamm.lithium_ion.DFN(options)
+        model = pybamm.lithium_ion.DFN()
+        model.options_set(thermal="x-full", thermal_current_collector=True)
+        with self.assertRaises(pybamm.OptionError):
+
+
 
     def test_x_full_Nplus1D_not_implemented(self):
         # 1plus1D
