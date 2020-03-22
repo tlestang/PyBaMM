@@ -7,167 +7,145 @@ import unittest
 
 class TestSPM(unittest.TestCase):
     def test_well_posed(self):
-        options = {"thermal": "isothermal"}
-        model = pybamm.lithium_ion.SPM(options)
-        model.check_well_posedness()
-
-        # Test build after init
-        model = pybamm.lithium_ion.SPM(build=False)
-        model.build_model()
+        model = pybamm.lithium_ion.SPM()
         model.check_well_posedness()
 
     def test_default_geometry(self):
-        options = {"thermal": "isothermal"}
-        model = pybamm.lithium_ion.SPM(options)
+        model = pybamm.lithium_ion.SPM()
         self.assertIsInstance(model.default_geometry, pybamm.Geometry)
         self.assertIn("negative particle", model.default_geometry)
 
-        options = {"current collector": "potential pair", "dimensionality": 1}
-        model = pybamm.lithium_ion.SPM(options)
+        model = pybamm.lithium_ion.SPM()
+        model.options_set("1+1D isothermal pouch cell")
         self.assertIn("current collector", model.default_geometry)
 
-        options = {"current collector": "potential pair", "dimensionality": 2}
-        model = pybamm.lithium_ion.SPM(options)
+        model = pybamm.lithium_ion.SPM()
+        model.options_set("2+1D isothermal pouch cell")
         self.assertIn("current collector", model.default_geometry)
 
-    def test_well_posed_2plus1D(self):
-        options = {"current collector": "potential pair", "dimensionality": 1}
-        model = pybamm.lithium_ion.SPM(options)
+    def test_well_posed_x_plus1D(self):
+        model = pybamm.lithium_ion.SPM()
+        model.options_set("1+1D isothermal pouch cell")
         model.check_well_posedness()
 
-        options = {"current collector": "potential pair", "dimensionality": 2}
-        model = pybamm.lithium_ion.SPM(options)
+        model = pybamm.lithium_ion.SPM()
+        model.options_set("2+1D isothermal pouch cell")
         model.check_well_posedness()
 
     def test_x_full_thermal_model_no_current_collector(self):
-        options = {"thermal": "x-full"}
-        model = pybamm.lithium_ion.SPM(options)
+        model = pybamm.lithium_ion.SPM()
+        model.options_set(thermal="x-full")
         model.check_well_posedness()
 
         # Not implemented with current collectors
-        options = {"thermal": "x-full", "thermal current collector": True}
-        with self.assertRaises(NotImplementedError):
-            model = pybamm.lithium_ion.SPM(options)
+        model = pybamm.lithium_ion.SPM()
+        with self.assertRaises(pybamm.OptionWarning):
+            model.options_set(thermal="x-full", thermal_current_collector=True)
 
     def test_x_full_Nplus1D_not_implemented(self):
         # 1plus1D
-        options = {
-            "current collector": "potential pair",
-            "dimensionality": 1,
-            "thermal": "x-full",
-        }
-        with self.assertRaises(NotImplementedError):
-            pybamm.lithium_ion.SPM(options)
+        model = pybamm.lithium_ion.SPM()
+        with self.assertRaises(pybamm.OptionWarning):
+            model.options_set(
+                current_collector="potential pair", dimensionality=1, thermal="x-full"
+            )
+
         # 2plus1D
-        options = {
-            "current collector": "potential pair",
-            "dimensionality": 2,
-            "thermal": "x-full",
-        }
-        with self.assertRaises(NotImplementedError):
-            pybamm.lithium_ion.SPM(options)
+        model = pybamm.lithium_ion.SPM()
+        with self.assertRaises(pybamm.OptionWarning):
+            model.options_set(
+                current_collector="potential pair", dimensionality=2, thermal="x-full"
+            )
 
     def test_x_lumped_thermal_model_no_Current_collector(self):
-        options = {"thermal": "x-lumped"}
-        model = pybamm.lithium_ion.SPM(options)
+        model = pybamm.lithium_ion.SPM()
+        model.options_set(thermal="x-lumped")
         model.check_well_posedness()
 
         # xyz-lumped returns the same as x-lumped
-        options = {"thermal": "xyz-lumped"}
-        model = pybamm.lithium_ion.SPM(options)
+        model = pybamm.lithium_ion.SPM()
+        model.options_set(thermal="xyz-lumped")
         model.check_well_posedness()
 
     def test_x_lumped_thermal_model_0D_current_collector(self):
-        options = {"thermal": "x-lumped", "thermal current collector": True}
-        model = pybamm.lithium_ion.SPM(options)
+        model = pybamm.lithium_ion.SPM()
+        model.options_set(thermal_current_collector=True, thermal="x-lumped")
         model.check_well_posedness()
 
         # xyz-lumped returns the same as x-lumped
-        options = {"thermal": "xyz-lumped", "thermal current collector": True}
-        model = pybamm.lithium_ion.SPM(options)
+        model = pybamm.lithium_ion.SPM()
+        model.options_set(thermal_current_collector=True, thermal="xyz-lumped")
         model.check_well_posedness()
 
-        options = {"thermal": "lumped"}
-        model = pybamm.lithium_ion.SPM(options)
+        model = pybamm.lithium_ion.SPM()
+        model.options_set(thermal="lumped")
         model.check_well_posedness()
 
     def test_xyz_lumped_thermal_1D_current_collector(self):
-        options = {
-            "current collector": "potential pair",
-            "dimensionality": 1,
-            "thermal": "xyz-lumped",
-        }
-        model = pybamm.lithium_ion.SPM(options)
+        model = pybamm.lithium_ion.SPM()
+        model.options_set(
+            current_collector="potential pair", dimensionality=1, thermal="xyz-lumped"
+        )
         model.check_well_posedness()
 
-        options = {
-            "current collector": "potential pair",
-            "dimensionality": 1,
-            "thermal": "lumped",
-        }
-        model = pybamm.lithium_ion.SPM(options)
+        model = pybamm.lithium_ion.SPM()
+        model.options_set(
+            current_collector="potential pair", dimensionality=1, thermal="lumped"
+        )
         model.check_well_posedness()
 
     def test_xyz_lumped_thermal_2D_current_collector(self):
-        options = {
-            "current collector": "potential pair",
-            "dimensionality": 2,
-            "thermal": "xyz-lumped",
-        }
-        model = pybamm.lithium_ion.SPM(options)
+        model = pybamm.lithium_ion.SPM()
+        model.options_set(
+            current_collector="potential pair", dimensionality=2, thermal="xyz-lumped"
+        )
         model.check_well_posedness()
 
-        options = {
-            "current collector": "potential pair",
-            "dimensionality": 2,
-            "thermal": "lumped",
-        }
-        model = pybamm.lithium_ion.SPM(options)
+        model = pybamm.lithium_ion.SPM()
+        model.options_set(
+            current_collector="potential pair", dimensionality=2, thermal="lumped"
+        )
         model.check_well_posedness()
 
     def test_x_lumped_thermal_1D_current_collector(self):
-        options = {
-            "current collector": "potential pair",
-            "dimensionality": 1,
-            "thermal": "x-lumped",
-        }
-        model = pybamm.lithium_ion.SPM(options)
+        model = pybamm.lithium_ion.SPM()
+        model.options_set(
+            current_collector="potential pair", dimensionality=1, thermal="x-lumped"
+        )
         model.check_well_posedness()
 
     def test_x_lumped_thermal_2D_current_collector(self):
-        options = {
-            "current collector": "potential pair",
-            "dimensionality": 2,
-            "thermal": "x-lumped",
-        }
-        model = pybamm.lithium_ion.SPM(options)
+        model = pybamm.lithium_ion.SPM()
+        model.options_set(
+            current_collector="potential pair", dimensionality=2, thermal="x-lumped"
+        )
         model.check_well_posedness()
 
     def test_particle_fast_diffusion(self):
-        options = {"particle": "fast diffusion"}
-        model = pybamm.lithium_ion.SPM(options)
+        model = pybamm.lithium_ion.SPM()
+        model.options_set(particle="fast diffusion")
         model.check_well_posedness()
 
     def test_surface_form_differential(self):
-        options = {"surface form": "differential"}
-        model = pybamm.lithium_ion.SPM(options)
+        model = pybamm.lithium_ion.SPM()
+        model.options_set(surface_form="differential")
         model.check_well_posedness()
 
     def test_surface_form_algebraic(self):
-        options = {"surface form": "algebraic"}
-        model = pybamm.lithium_ion.SPM(options)
+        model = pybamm.lithium_ion.SPM()
+        model.options_set(surface_form="algebraic")
         model.check_well_posedness()
 
 
 class TestSPMExternalCircuits(unittest.TestCase):
     def test_well_posed_voltage(self):
-        options = {"operating mode": "voltage"}
-        model = pybamm.lithium_ion.SPM(options)
+        model = pybamm.lithium_ion.SPM()
+        model.options_set(operating_mode="voltage")
         model.check_well_posedness()
 
     def test_well_posed_power(self):
-        options = {"operating mode": "power"}
-        model = pybamm.lithium_ion.SPM(options)
+        model = pybamm.lithium_ion.SPM()
+        model.options_set(operating_mode="power")
         model.check_well_posedness()
 
     def test_well_posed_function(self):
@@ -176,8 +154,8 @@ class TestSPMExternalCircuits(unittest.TestCase):
             V = variables["Terminal voltage [V]"]
             return V + I - pybamm.FunctionParameter("Function", pybamm.t)
 
-        options = {"operating mode": external_circuit_function}
-        model = pybamm.lithium_ion.SPM(options)
+        model = pybamm.lithium_ion.SPM()
+        model.options_set(operating_mode=external_circuit_function)
         model.check_well_posedness()
 
 

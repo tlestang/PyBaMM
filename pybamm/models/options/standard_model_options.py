@@ -5,7 +5,7 @@ import pybamm
 
 
 operating_mode = pybamm.Option(
-    "operating mode", "current", ["current", "voltage", "power"]
+    "operating mode", "current", ["current", "voltage", "power", "FUNCTION"]
 )
 
 dimensionality = pybamm.Option("dimensionality", 0, [0, 1, 2])

@@ -26,6 +26,8 @@ class Option:
     def has(self, value):
         if self.possible_values == []:
             return isinstance(value, list)
+        elif callable(value) and "FUNCTION" in self.possible_values:
+            return True
         else:
             return value in self.possible_values
 
