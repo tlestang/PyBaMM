@@ -28,7 +28,7 @@ class BasicSPM(BaseModel):
     **Extends:** :class:`pybamm.lithium_ion.BaseModel`
     """
 
-    def __init__(self, name="Single Particle Model"):
+    def __init__(self, name="Single Particle Model", ocv_only=False):
         super().__init__({}, name)
         # `param` is a class containing all the relevant parameters and functions for
         # this model. These are purely symbolic at this stage, and will be set by the
@@ -149,9 +149,14 @@ class BasicSPM(BaseModel):
         eta_n = (2 / param.ne_n) * pybamm.arcsinh(j_n / (2 * j0_n))
         eta_p = (2 / param.ne_p) * pybamm.arcsinh(j_p / (2 * j0_p))
         phi_s_n = 0
-        phi_e = -eta_n - param.U_n(c_s_surf_n, T)
-        phi_s_p = eta_p + phi_e + param.U_p(c_s_surf_p, T)
-        V = phi_s_p
+        if ocv_only:
+            phi_e = -param.U_n(c_s_surf_n, T)
+            phi_s_p = phi_e + param.U_p(c_s_surf_p, T)
+            V = phi_s_p
+        else:
+            phi_e = -eta_n - param.U_n(c_s_surf_n, T)
+            phi_s_p = eta_p + phi_e + param.U_p(c_s_surf_p, T)
+            V = phi_s_p
 
         whole_cell = ["negative electrode", "separator", "positive electrode"]
         # The `variables` dictionary contains all variables that might be useful for

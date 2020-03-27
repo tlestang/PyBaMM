@@ -169,16 +169,20 @@ class BasicSPMe(BaseModel):
         ocv = U_p - U_n
 
         if wrong_j0:
-            # j0(av) rather than av(j0) and multiplied by L
-            j0_n = (
-                0.5
-                * (param.m_n(T) / param.C_r_n)
-                * (c_s_surf_n * (1 - c_s_surf_n) * (pybamm.x_average(c_e_n))) ** (1 / 2)
+            j0_n = 0.5 * pybamm.x_average(
+                param.m_n(T)
+                / param.C_r_n
+                * c_s_surf_n ** (1 / 2)
+                * (1 - c_s_surf_n) ** (1 / 2)
+                * (c_e_n) ** (1 / 2)
             )
-            j0_p = (
-                0.5
-                * (param.gamma_p * param.m_p(T) / param.C_r_p)
-                * (c_s_surf_p * (1 - c_s_surf_p) * (pybamm.x_average(c_e_p))) ** (1 / 2)
+            j0_p = 0.5 * pybamm.x_average(
+                param.gamma_p
+                * param.m_p(T)
+                / param.C_r_p
+                * c_s_surf_p ** (1 / 2)
+                * (1 - c_s_surf_p) ** (1 / 2)
+                * (c_e_p) ** (1 / 2)
             )
         else:
             j0_n = pybamm.x_average(
