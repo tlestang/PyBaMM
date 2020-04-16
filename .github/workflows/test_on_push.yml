@@ -78,6 +78,7 @@ jobs:
         echo LD_LIBRARY_PATH=$LD_LIBRARY_PATH
         echo DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH
         pybamm_install_odes
+        source $HOME/.bashrc
 
     - name: Run unit tests
       run: |
