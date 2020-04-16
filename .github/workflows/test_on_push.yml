@@ -1,0 +1,100 @@
+name: PyBaMM
+
+on: push
+
+jobs:
+  
+  style:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Check style
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.7
+  
+    - name: Install package
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e .[dev]
+        
+    - name: Check style
+      run: python -m flake8
+  
+  build:
+    needs: style
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: [3.6, 3.7]
+
+    env:
+      LD_LIBRARY_PATH: '$HOME/.local/lib'
+      DYLD_LIBRARY_PATH: '$HOME/.local/lib'
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Install Linux system dependencies
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt install gfortran gcc libopenblas-dev liblapack-dev graphviz libsuitesparse-dev
+        sudo apt install python${{ matrix.python-version }}.dev
+    
+    - name: Install MacOS system dependencies
+      if: matrix.os == 'macos-latest'
+      run: |
+        brew update
+        brew install graphviz
+        brew install openblas suitesparse
+        
+    - name: Install Windows system dependencies
+      if: matrix.os == 'windows-latest'
+      run: choco install graphviz
+
+    - name: Install SUNDIALS and SuiteSparse
+      if: matrix.os != 'windows-latest'
+      run: |
+        pip install wget
+        python scripts/setup_KLU_module_build.py
+        rm -rf pybind11;
+        git clone https://github.com/pybind/pybind11.git;
+
+    - name: Install standard PyBaMM package
+      run: |
+        pip install --updrage pip
+        pip install .
+
+    - name: Install optional scikits.odes package
+      run: |
+        pybamm_install_odes
+
+    - name: Run unit tests
+      run: |
+        echo LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+        echo DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH
+        python run-tests.py --unit --folder all
+
+    # - name: Install docs dependencies and run doctests
+    #   if: matrix.os != 'windows-latest'
+    #   run: |
+    #     pip install -e .[docs]
+    #     python run-tests.py --doctest
+    
+    # - name: Install dev python dependencies and run style and example tests
+    #   if: matrix.os != 'windows-latest'
+    #   run: |
+    #     pip install -e .[dev]
+    #     python run-tests.py --examples
+        
+    # - name: Instal and run coverage
+    #   if: success() && (matrix.os == 'unbuntu-latest' && matrix.python-version == 3.7)
+    #   run: |
+    #     pip install coverage codecov
+    #     codecov
