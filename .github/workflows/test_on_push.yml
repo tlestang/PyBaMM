@@ -69,7 +69,7 @@ jobs:
 
     - name: Install standard PyBaMM package
       run: |
-        pip install --updrage pip
+        pip install --upgrade pip
         pip install wheel
         pip install .
 
