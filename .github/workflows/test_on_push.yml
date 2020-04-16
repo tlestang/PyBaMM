@@ -32,8 +32,8 @@ jobs:
         python-version: [3.6, 3.7]
 
     env:
-      LD_LIBRARY_PATH: '$HOME/.local/lib'
-      DYLD_LIBRARY_PATH: '$HOME/.local/lib'
+      LD_LIBRARY_PATH: '/home/runner/.local/lib'
+      DYLD_LIBRARY_PATH: '/home/runner/.local/lib'
 
     steps:
     - uses: actions/checkout@v2
