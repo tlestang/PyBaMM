@@ -16,6 +16,7 @@ jobs:
     - name: Install package
       run: |
         python -m pip install --upgrade pip
+        pip install wheel
         pip install -e .[dev]
         
     - name: Check style
@@ -69,6 +70,7 @@ jobs:
     - name: Install standard PyBaMM package
       run: |
         pip install --updrage pip
+        pip install wheel
         pip install .
 
     - name: Install optional scikits.odes package
