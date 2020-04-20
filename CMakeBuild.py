@@ -13,6 +13,7 @@ default_lib_dir = (
     "" if system() == "Windows" else os.path.join(os.getenv("HOME"), ".local")
 )
 
+
 class CMakeBuild(build_ext):
     user_options = build_ext.user_options + [
         ("suitesparse-root=", None, "suitesparse source location"),
