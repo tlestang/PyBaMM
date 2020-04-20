@@ -31,10 +31,6 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: [3.6, 3.7]
 
-    env:
-      LD_LIBRARY_PATH: '/home/runner/.local/lib'
-      DYLD_LIBRARY_PATH: '/home/runner/.local/lib'
-
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -76,15 +72,11 @@ jobs:
     - name: Install optional scikits.odes package
       if: matrix.os != 'windows-latest'
       run: |
-        echo LD_LIBRARY_PATH=$LD_LIBRARY_PATH
-        echo DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH
         pybamm_install_odes
         source $HOME/.bashrc
 
     - name: Run unit tests
       run: |
-        echo LD_LIBRARY_PATH=$LD_LIBRARY_PATH
-        echo DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH
         python run-tests.py --unit --folder all
 
     # - name: Install docs dependencies and run doctests
