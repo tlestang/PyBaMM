@@ -2,12 +2,12 @@ import os
 import sys
 import subprocess
 from pathlib import Path
-from platform import system
 
 try:
     from setuptools.command.build_ext import build_ext
 except ImportError:
     from distutils.command.build_ext import build_ext
+
 
 class CMakeBuild(build_ext):
     user_options = build_ext.user_options + [
