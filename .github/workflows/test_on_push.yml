@@ -67,7 +67,7 @@ jobs:
       run: |
         pip install --upgrade pip
         pip install wheel
-        pip install -e .
+        pip install .
 
     - name: Install optional scikits.odes package
       if: matrix.os != 'windows-latest'
