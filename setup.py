@@ -156,8 +156,12 @@ pybamm_data.append("./version")
 pybamm_data.append("./CITATIONS.txt")
 
 # ext_modules = []
+print("###################################################")
 idaklu_ext = Extension("idaklu", ["pybamm/solvers/c_solvers/idaklu.cpp"])
 ext_modules = [idaklu_ext] if compile_KLU() else []
+print(ext_modules)
+print(system())
+print("###################################################")
 
 setup(
     name="pybamm",
