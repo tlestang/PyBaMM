@@ -71,11 +71,11 @@ jobs:
       run: |
         pip install --upgrade pip
         pip install wheel
-        pip install .
+        pip install -e .
 
     - name: Install optional scikits.odes package
+      if: matrix.os != 'windows-latest'
       run: |
-        if: matrix.os != 'windows-latest'
         echo LD_LIBRARY_PATH=$LD_LIBRARY_PATH
         echo DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH
         pybamm_install_odes
