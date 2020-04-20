@@ -9,11 +9,6 @@ try:
 except ImportError:
     from distutils.command.build_ext import build_ext
 
-default_lib_dir = (
-    "" if system() == "Windows" else os.path.join(os.getenv("HOME"), ".local")
-)
-
-
 class CMakeBuild(build_ext):
     user_options = build_ext.user_options + [
         ("suitesparse-root=", None, "suitesparse source location"),
@@ -47,6 +42,9 @@ class CMakeBuild(build_ext):
             self.sundials_root = os.path.join(os.getenv("HOME"), ".local")
 
     def run(self):
+        if not self.extensions:
+            return
+
         cmake_args = ["-DPYTHON_EXECUTABLE={}".format(sys.executable)]
         if self.suitesparse_root:
             cmake_args.append(
