@@ -3,7 +3,7 @@ name: PyBaMM
 on: push
 
 jobs:
-
+  
   build:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -14,31 +14,30 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Print environment variables
-      run: |
-        echo "############################"
-        echo $LD_LIBRARY_PATH
-        echo $DYLD_LIBRARY_PATH
-        echo "############################"
-
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
-
+    
+    - name: Install Linux system dependencies
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt install gfortran gcc libopenblas-dev liblapack-dev graphviz
+        sudo apt install python${{ matrix.python-version }}.dev
+    
     - name: Install MacOS system dependencies
       if: matrix.os == 'macos-latest'
       run: |
         brew update
         brew install graphviz
         brew install openblas suitesparse
-
+        
     - name: Install SUNDIALS and SuiteSparse
       if: matrix.os != 'windows-latest'
       run: |
         pip install wget
         python scripts/setup_KLU_module_build.py
-        echo "::set-env name=LD_LIBRARY_PATH::$HOME/.local/lib:$LD_LIBRARY_PATH"
+        echo "::set-env name=LD_LIBRARY_PATH::$a/.local/lib:$LD_LIBRARY_PATH"
         rm -rf pybind11;
         git clone https://github.com/pybind/pybind11.git;
 
@@ -52,8 +51,7 @@ jobs:
       if: matrix.os != 'windows-latest'
       run: |
         pybamm_install_odes
-    
-    - name: Run unit tests for scikits solvers
+
+    - name: Run unit tests
       run: |
-        # export LD_LIBRARY_PATH=$HOME/.local/lib:$LD_LIBRARY_PATH
         python -m unittest tests/unit/test_solvers/test_scikits_solvers.py
