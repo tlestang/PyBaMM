@@ -45,7 +45,6 @@ jobs:
       run: |
         pip install wget
         python scripts/setup_KLU_module_build.py
-        # export LD_LIBRARY_PATH=$HOME/.local/lib:$LD_LIBRARY_PATH
         rm -rf pybind11;
         git clone https://github.com/pybind/pybind11.git;
 
@@ -59,11 +58,19 @@ jobs:
       if: matrix.os != 'windows-latest'
       run: |
         pybamm_install_odes
+        echo "echo BONJOUR" >> /Users/runner/.bashrc
         source $HOME/.bashrc
+        echo "############################"
+        echo $LD_LIBRARY_PATH
+        echo $DYLD_LIBRARY_PATH
+        echo "############################"
 
     - name: Run unit tests for scikits solvers
+      env:
+        LD_LIBRARY_PATH: '/Users/runner/.local/lib'
       run: |
         echo "############################"
+        tail /Users/runner/.bashrc
         echo $LD_LIBRARY_PATH
         echo $DYLD_LIBRARY_PATH
         echo "############################"
