@@ -13,11 +13,18 @@ jobs:
         python-version: [3.6]
 
     env:
-      LD_LIBRARY_PATH: '/home/runner/.local/lib'
-      DYLD_LIBRARY_PATH: '/home/runner/.local/lib'
+      LD_LIBRARY_PATH: '/Users/runner/.local/lib'
+      DYLD_LIBRARY_PATH: '/Users/runner/.local/lib'
 
     steps:
     - uses: actions/checkout@v2
+    - name: Print environment variables
+      run: |
+        echo "############################"
+        echo $LD_LIBRARY_PATH
+        echo $DYLD_LIBRARY_PATH
+        echo "############################"
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
       with:
@@ -53,4 +60,8 @@ jobs:
 
     - name: Run unit tests for scikits solvers
       run: |
+        echo "############################"
+        echo $LD_LIBRARY_PATH
+        echo $DYLD_LIBRARY_PATH
+        echo "############################"
         python -m unittest tests/unit/test_solvers/test_scikits_solvers.py
