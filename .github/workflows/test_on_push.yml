@@ -32,11 +32,14 @@ jobs:
         tail /Users/runner/.bashrc
         source /Users/runner/.bashrc
         echo $a
+        echo "::set-env name=LD_LIBRARY_PATH::$a/.local/lib:$LD_LIBRARY_PATH"
+
 
     - name: Print variable a
       run: |
         echo "#########"
         echo $a
+        echo ${{ env.LD_LIBRARY_PATH }}
         echo "#########"
         tail /Users/runner/.bashrc
 
