@@ -12,10 +12,6 @@ jobs:
         os: [macos-latest]
         python-version: [3.6]
 
-    env:
-      LD_LIBRARY_PATH: '/Users/runner/.local/lib'
-      DYLD_LIBRARY_PATH: '/Users/runner/.local/lib'
-
     steps:
     - uses: actions/checkout@v2
     - name: Print environment variables
@@ -25,68 +21,38 @@ jobs:
         echo $DYLD_LIBRARY_PATH
         echo "############################"
 
-    - name: Add echo statement to .bashrc
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install MacOS system dependencies
+      if: matrix.os == 'macos-latest'
       run: |
-        echo "echo BONJOUR" >> /Users/runner/.bashrc
-        echo "export a=\"blah\"" >> ~/.bashrc
-        tail /Users/runner/.bashrc
-        source /Users/runner/.bashrc
-        echo $a
+        brew update
+        brew install graphviz
+        brew install openblas suitesparse
 
-    - name: Print variable a
+    - name: Install SUNDIALS and SuiteSparse
+      if: matrix.os != 'windows-latest'
       run: |
-        echo "#########"
-        echo $a
-        echo "#########"
-        tail /Users/runner/.bashrc
+        pip install wget
+        python scripts/setup_KLU_module_build.py
+        rm -rf pybind11;
+        git clone https://github.com/pybind/pybind11.git;
 
-    # - name: Debugging with tmate
-    #   uses: mxschmitt/action-tmate@v2
+    - name: Install standard PyBaMM package
+      run: |
+        pip install --upgrade pip
+        pip install wheel
+        pip install -e .
 
-    # - name: Set up Python ${{ matrix.python-version }}
-    #   uses: actions/setup-python@v1
-    #   with:
-    #     python-version: ${{ matrix.python-version }}
-
-    # - name: Install MacOS system dependencies
-    #   if: matrix.os == 'macos-latest'
-    #   run: |
-    #     brew update
-    #     brew install graphviz
-    #     brew install openblas suitesparse
-
-    # - name: Install SUNDIALS and SuiteSparse
-    #   if: matrix.os != 'windows-latest'
-    #   run: |
-    #     pip install wget
-    #     python scripts/setup_KLU_module_build.py
-    #     rm -rf pybind11;
-    #     git clone https://github.com/pybind/pybind11.git;
-
-    # - name: Install standard PyBaMM package
-    #   run: |
-    #     pip install --upgrade pip
-    #     pip install wheel
-    #     pip install -e .
-
-    # - name: Install optional scikits.odes package
-    #   if: matrix.os != 'windows-latest'
-    #   run: |
-    #     pybamm_install_odes
-    #     echo "echo BONJOUR" >> /Users/runner/.bashrc
-    #     source $HOME/.bashrc
-    #     echo "############################"
-    #     echo $LD_LIBRARY_PATH
-    #     echo $DYLD_LIBRARY_PATH
-    #     echo "############################"
-
-    # - name: Run unit tests for scikits solvers
-    #   env:
-    #     LD_LIBRARY_PATH: '/Users/runner/.local/lib'
-    #   run: |
-    #     echo "############################"
-    #     tail /Users/runner/.bashrc
-    #     echo $LD_LIBRARY_PATH
-    #     echo $DYLD_LIBRARY_PATH
-    #     echo "############################"
-    #     python -m unittest tests/unit/test_solvers/test_scikits_solvers.py
+    - name: Install optional scikits.odes package
+      if: matrix.os != 'windows-latest'
+      run: |
+        pybamm_install_odes
+    
+    - name: Run unit tests for scikits solvers
+      run: |
+        export LD_LIBRARY_PATH=$HOME/.local/lib:$LD_LIBRARY_PATH
+        python -m unittest tests/unit/test_solvers/test_scikits_solvers.py
