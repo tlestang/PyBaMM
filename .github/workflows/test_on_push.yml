@@ -3,7 +3,7 @@ name: PyBaMM
 on: push
 
 jobs:
-  
+
   build:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -25,24 +25,27 @@ jobs:
         echo $DYLD_LIBRARY_PATH
         echo "############################"
 
+    - name: Debugging with tmate
+      uses: mxschmitt/action-tmate@v2
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
-    
+
     - name: Install MacOS system dependencies
       if: matrix.os == 'macos-latest'
       run: |
         brew update
         brew install graphviz
         brew install openblas suitesparse
-        
+
     - name: Install SUNDIALS and SuiteSparse
       if: matrix.os != 'windows-latest'
       run: |
         pip install wget
         python scripts/setup_KLU_module_build.py
-        export LD_LIBRARY_PATH=$HOME/.local/lib:$LD_LIBRARY_PATH
+        # export LD_LIBRARY_PATH=$HOME/.local/lib:$LD_LIBRARY_PATH
         rm -rf pybind11;
         git clone https://github.com/pybind/pybind11.git;
 
