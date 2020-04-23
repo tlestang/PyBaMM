@@ -9,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest]
+        os: [ubuntu-latest, macos-latest]
         python-version: [3.6]
 
     steps:
@@ -38,6 +38,7 @@ jobs:
       run: |
         pip install wget
         python scripts/setup_KLU_module_build.py
+        echo "::set-env name=LD_LIBRARY_PATH::$HOME/.local/lib:$LD_LIBRARY_PATH"
         rm -rf pybind11;
         git clone https://github.com/pybind/pybind11.git;
 
@@ -54,5 +55,5 @@ jobs:
     
     - name: Run unit tests for scikits solvers
       run: |
-        export LD_LIBRARY_PATH=$HOME/.local/lib:$LD_LIBRARY_PATH
+        # export LD_LIBRARY_PATH=$HOME/.local/lib:$LD_LIBRARY_PATH
         python -m unittest tests/unit/test_solvers/test_scikits_solvers.py
