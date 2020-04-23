@@ -13,8 +13,8 @@ jobs:
         python-version: [3.6]
 
     env:
-      LD_LIBRARY_PATH: '/Users/runner/.local/lib'
-      DYLD_LIBRARY_PATH: '/Users/runner/.local/lib'
+      LD_LIBRARY_PATH: $HOME/.local/lib
+      DYLD_LIBRARY_PATH: $HOME/.local/lib
 
     steps:
     - uses: actions/checkout@v2
@@ -27,10 +27,10 @@ jobs:
 
     - name: Add echo statement to .bashrc
       run: |
-        echo "echo BONJOUR" >> /Users/runner/.bashrc
+        echo "echo BONJOUR" >> $HOME/.bashrc
         echo "export a=\"blah\"" >> ~/.bashrc
-        tail /Users/runner/.bashrc
-        source /Users/runner/.bashrc
+        tail $HOME/.bashrc
+        source $HOME/.bashrc
         echo $a
         echo "::set-env name=LD_LIBRARY_PATH::$a/.local/lib:$LD_LIBRARY_PATH"
 
@@ -41,7 +41,7 @@ jobs:
         echo $a
         echo ${{ env.LD_LIBRARY_PATH }}
         echo "#########"
-        tail /Users/runner/.bashrc
+        tail $HOME/.bashrc
 
     # - name: Debugging with tmate
     #   uses: mxschmitt/action-tmate@v2
@@ -76,7 +76,7 @@ jobs:
     #   if: matrix.os != 'windows-latest'
     #   run: |
     #     pybamm_install_odes
-    #     echo "echo BONJOUR" >> /Users/runner/.bashrc
+    #     echo "echo BONJOUR" >> $HOME/.bashrc
     #     source $HOME/.bashrc
     #     echo "############################"
     #     echo $LD_LIBRARY_PATH
@@ -85,10 +85,10 @@ jobs:
 
     # - name: Run unit tests for scikits solvers
     #   env:
-    #     LD_LIBRARY_PATH: '/Users/runner/.local/lib'
+    #     LD_LIBRARY_PATH: '$HOME/.local/lib'
     #   run: |
     #     echo "############################"
-    #     tail /Users/runner/.bashrc
+    #     tail $HOME/.bashrc
     #     echo $LD_LIBRARY_PATH
     #     echo $DYLD_LIBRARY_PATH
     #     echo "############################"
