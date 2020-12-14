@@ -1,14 +1,8 @@
-name: PyBaMM
+name: Test sckits.odes
 
 on:
   push:
     
-  pull_request:
-
-  # everyday at 3 am UTC
-  schedule:
-    - cron:  '0 3 * * *'
-
 jobs:
   
   build:
@@ -39,8 +33,10 @@ jobs:
         python -m pip install --upgrade pip wheel setuptools
         pip install -e .
         
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
+    - name: Install scikits.odes and run tests
+      run: |
+        pip install scikits.odes
+        python -m unittest tests.unit.test_solvers.test_scikits_solvers
 
     
     
