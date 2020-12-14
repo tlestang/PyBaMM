@@ -68,6 +68,11 @@ jobs:
         python -m pip install --upgrade pip wheel setuptools
         python -m pip install tox
 
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
+      with:
+        sudo: false
+
     - name: Install SuiteSparse and Sundials
       if: matrix.os != 'windows-latest'
       run: tox -e pybamm-requires
