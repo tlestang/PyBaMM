@@ -41,7 +41,7 @@ jobs:
       if: matrix.os == 'macos-latest'
       run: |
         brew update
-        brew install graphviz
+        brew install graphviz        
         brew install openblas
         
     - name: Install standard python dependencies
@@ -55,9 +55,5 @@ jobs:
     - name: Run unit tests for GNU/Linux and MacOS
       run: |
         pip install julia diffeqpy
-        pip install .
-        python -c "import julia; julia.install(); import diffeqpy; diffeqpy.install()"
-
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
+        tox -e tests-julia-scikits.odes
 
