@@ -8,7 +8,8 @@ import numpy as np
 
 # julia imports
 have_julia = pybamm.have_julia()
-if have_julia:
+# if have_julia:
+if False:
     from julia import Main
     from julia import Pkg
     from diffeqpy import de
