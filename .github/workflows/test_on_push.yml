@@ -52,8 +52,21 @@ jobs:
     - name: Install SuiteSparse and Sundials
       run: tox -e pybamm-requires
 
-    - name: Run unit tests for GNU/Linux and MacOS
+    - name: Install pybamm and deps
       run: |
+        pip install -e .
         pip install julia diffeqpy
-        tox -e tests-julia-scikits.odes
+        pip install scikits.odes
+
+    - name: Run tests for scikits solver
+      run: |
+        python -m unittest tests.unit.test_solvers.test_scikits_solvers
+
+    - name: Run tests in test_solvers
+      run: |
+        python -m unittest tests.unit.test_solvers
+
+    - name: Run all unit tests
+      run: |
+        python run-tests.py --unit
 
