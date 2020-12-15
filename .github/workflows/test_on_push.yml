@@ -56,17 +56,21 @@ jobs:
       run: |
         pip install -e .
         pip install julia diffeqpy
+        export SUNDIALS_INST=~/.local
         pip install scikits.odes
 
     - name: Run tests for scikits solver
       run: |
+        export LD_LIBRARY_PATH=~/.local/lib:$LD_LIBRARY_PATH
         python -m unittest tests.unit.test_solvers.test_scikits_solvers
 
     - name: Run tests in test_solvers
       run: |
+        export LD_LIBRARY_PATH=~/.local/lib:$LD_LIBRARY_PATH
         python -m unittest tests.unit.test_solvers
 
     - name: Run all unit tests
       run: |
+        export LD_LIBRARY_PATH=~/.local/lib:$LD_LIBRARY_PATH
         python run-tests.py --unit
 
