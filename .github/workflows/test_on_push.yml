@@ -68,7 +68,7 @@ jobs:
     - name: Run tests in test_solvers
       run: |
         export LD_LIBRARY_PATH=~/.local/lib:$LD_LIBRARY_PATH
-        python -m unittest discover tests/unit/test_solvers
+        python -m unittest discover -v tests/unit/test_solvers
 
     - name: Run all unit tests
       run: |
