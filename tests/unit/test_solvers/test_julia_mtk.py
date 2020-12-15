@@ -16,7 +16,7 @@ if have_julia:
     Pkg.activate(".")
 
 
-@unittest.skip("Skipping julia MTK tests")
+@unittest.skipIf(not have_julia, "Julia not installed")
 class TestCreateSolveMTKModel(unittest.TestCase):
     def test_exponential_decay_model(self):
         model = pybamm.BaseModel()
