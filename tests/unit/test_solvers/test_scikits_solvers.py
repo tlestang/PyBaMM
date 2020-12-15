@@ -8,6 +8,9 @@ import warnings
 from tests import get_mesh_for_testing, get_discretisation_for_testing
 import sys
 
+from julia import Main
+from julia import Pkg
+from diffeqpy import de
 
 @unittest.skipIf(not pybamm.have_scikits_odes(), "scikits.odes not installed")
 class TestScikitsSolvers(unittest.TestCase):
